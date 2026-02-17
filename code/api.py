@@ -44,6 +44,9 @@ from institutional_pipeline import (
     InstitutionalPipeline, InstitutionalVerification,
     verify_audit_chain,
 )
+from sunlight_logging import get_logger
+
+logger = get_logger("api")
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -347,6 +350,8 @@ def submit_contract(contract: ContractIn):
     c.execute("SELECT 1 FROM contracts WHERE contract_id = ?", (contract.contract_id,))
     if c.fetchone():
         conn.close()
+        logger.warning("Duplicate contract submission",
+            extra={"contract_id": contract.contract_id})
         raise HTTPException(status_code=409, detail=f"Contract {contract.contract_id} already exists")
 
     raw_hash = hashlib.sha256(
@@ -368,6 +373,10 @@ def submit_contract(contract: ContractIn):
     )
     conn.commit()
     conn.close()
+
+    logger.info("Contract submitted",
+        extra={"contract_id": contract.contract_id, "award_amount": contract.award_amount,
+               "vendor": contract.vendor_name, "agency": contract.agency_name})
 
     return ContractOut(
         contract_id=contract.contract_id,
@@ -412,6 +421,9 @@ def analyze_single(request: AnalyzeSingleRequest):
         comparables = similar
 
     if len(comparables) < 3:
+        logger.info("Single analysis: insufficient comparables",
+            extra={"contract_id": request.contract_id, "comparable_count": len(comparables),
+                   "decision": "GRAY"})
         return AnalyzeSingleResponse(
             contract_id=request.contract_id,
             fraud_tier="GRAY",
@@ -437,6 +449,12 @@ def analyze_single(request: AnalyzeSingleRequest):
         'has_donations': request.has_political_donations,
         'is_sole_source': request.is_sole_source,
     })
+
+    logger.info("Single analysis complete",
+        extra={"contract_id": evidence.contract_id, "decision": evidence.tier.value,
+               "confidence": evidence.confidence_score, "markup_pct": evidence.raw_markup_pct,
+               "comparable_count": evidence.sample_size,
+               "bayesian_posterior": round(evidence.bayesian_fraud_probability.posterior_probability, 4)})
 
     return AnalyzeSingleResponse(
         contract_id=evidence.contract_id,
@@ -464,6 +482,10 @@ def analyze_batch(request: BatchRequest):
     Results are persisted to the database with a unique run_id.
     The run is fully reproducible given the same seed and data.
     """
+    logger.info("Batch analysis requested",
+        extra={"run_seed": request.run_seed, "n_bootstrap": request.n_bootstrap,
+               "fdr_alpha": request.fdr_alpha, "limit": request.limit})
+
     pipeline = InstitutionalPipeline(DB_PATH)
     try:
         result = pipeline.run(
@@ -477,6 +499,7 @@ def analyze_batch(request: BatchRequest):
             verbose=False,
         )
     except Exception as e:
+        logger.error("Batch analysis failed", extra={"error": str(e)})
         raise HTTPException(status_code=500, detail=f"Pipeline error: {str(e)}")
 
     return BatchResponse(**result)

@@ -10,6 +10,9 @@ from institutional_statistical_rigor import (
     BootstrapAnalyzer, BayesianFraudPrior, MultipleTestingCorrection,
     DOJProsecutionThresholds, FraudTier,
 )
+from sunlight_logging import get_logger
+
+logger = get_logger("pipeline")
 
 def derive_contract_seed(run_seed, contract_id):
     return int(hashlib.sha256(f"{run_seed}:{contract_id}".encode()).hexdigest()[:8], 16)
@@ -53,6 +56,9 @@ def score_contract(contract, seed, config, bootstrap_analyzer):
     insufficient = len(comparables) < min_comparables
     result = {'contract_id': contract['contract_id'], 'insufficient_comparables': insufficient, 'comparable_count': len(comparables)}
     if insufficient:
+        logger.debug("Insufficient comparables",
+            extra={"contract_id": contract['contract_id'], "comparable_count": len(comparables),
+                   "min_required": min_comparables, "decision": "GRAY"})
         result.update({'selection_params_json': json.dumps({'agency': contract.get('agency_name',''), 'reason': 'insufficient'}),
             'raw_pvalue': None, 'markup_pct': None, 'markup_ci_lower': None, 'markup_ci_upper': None,
             'raw_zscore': None, 'log_zscore': None, 'bootstrap_percentile': None,
@@ -109,13 +115,33 @@ def assign_tier(score, fdr_adj, survives_fdr):
     if post > 0.80: f.append(90)
     elif post > 0.50: f.append(75)
     elif post > 0.20: f.append(60)
-    if not f: return 'GREEN', 5000
+    if not f:
+        logger.debug("No evidence signals", extra={"contract_id": score.get('contract_id'), "decision": "GREEN"})
+        return 'GREEN', 5000
     avg = int(np.mean(f))
-    if ci > 300: return 'RED', 100-avg
-    elif avg >= 90 and survives_fdr: return 'RED', 100-avg
-    elif avg >= 70: return 'YELLOW', 200-avg
-    elif score['comparable_count'] < 5: return 'GRAY', 9000
-    return 'GREEN', 5000
+    if ci > 300:
+        tier = 'RED'
+    elif avg >= 90 and survives_fdr:
+        tier = 'RED'
+    elif avg >= 70:
+        tier = 'YELLOW'
+    elif score['comparable_count'] < 5:
+        tier = 'GRAY'
+    else:
+        tier = 'GREEN'
+    priority = 100 - avg if tier == 'RED' else (200 - avg if tier == 'YELLOW' else (9000 if tier == 'GRAY' else 5000))
+    cid = score.get('contract_id')
+    if tier in ('RED', 'YELLOW'):
+        logger.info("Fraud signal detected",
+            extra={"contract_id": cid, "decision": tier,
+                   "confidence_avg": avg, "markup_ci_lower": ci,
+                   "bayesian_posterior": round(post, 4),
+                   "percentile_ci_lower": pci, "survives_fdr": survives_fdr,
+                   "evidence_factors": f})
+    else:
+        logger.debug("Tier assigned",
+            extra={"contract_id": cid, "decision": tier, "confidence_avg": avg})
+    return tier, priority
 
 def append_audit_entry(db_path, action, details, run_id=None):
     conn = sqlite3.connect(db_path); c = conn.cursor()
@@ -136,6 +162,8 @@ def append_audit_entry(db_path, action, details, run_id=None):
     c.execute("INSERT INTO audit_log (log_id,sequence_number,timestamp,action_type,entity_id,previous_log_hash,current_log_hash,action,run_id,details,previous_hash,entry_hash) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
         (lid,seq,ts,action,run_id,prev_hash,eh,action,run_id,json.dumps(details),prev_hash,eh))
     conn.commit(); conn.close()
+    logger.debug("Audit entry appended",
+        extra={"action": action, "run_id": run_id, "sequence": seq, "entry_hash": eh[:16]})
     return eh
 
 def verify_audit_chain(db_path):
@@ -164,19 +192,19 @@ class InstitutionalPipeline:
         config = {**self.DEFAULT_CONFIG, **(config or {})}
         config_hash = compute_config_hash(config)
         run_id = f"run_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}_{run_seed}"
-        if verbose:
-            print("="*70); print(f"SUNLIGHT INSTITUTIONAL PIPELINE - {run_id}"); print("="*70)
-            print(f"  Seed: {run_seed}  Bootstrap: {config['n_bootstrap']}")
+        logger.info("Pipeline starting",
+            extra={"run_id": run_id, "run_seed": run_seed, "n_bootstrap": config['n_bootstrap'],
+                   "fdr_alpha": config['fdr_alpha'], "config_hash": config_hash[:16]})
 
         # Preload ALL contract amounts by agency (one query, not 1000)
-        if verbose: print("  Preloading comparable cache...")
         agency_cache = self._build_agency_cache()
-        if verbose: print(f"  Cache built: {len(agency_cache)} agencies")
+        logger.info("Agency cache built", extra={"run_id": run_id, "n_agencies": len(agency_cache)})
 
         contracts = self._load_contracts(config['min_amount'], limit)
-        if verbose: print(f"  Loaded {len(contracts)} contracts")
         dataset_hash = compute_dataset_hash(contracts)
-        if verbose: print(f"  Dataset hash: {dataset_hash[:16]}...")
+        logger.info("Contracts loaded",
+            extra={"run_id": run_id, "n_contracts": len(contracts),
+                   "dataset_hash": dataset_hash[:16], "min_amount": config['min_amount']})
 
         self._create_run_record(run_id, run_seed, config, config_hash, dataset_hash, len(contracts))
         append_audit_entry(self.db_path, 'RUN_STARTED', {'run_id':run_id,'n':len(contracts),'config_hash':config_hash,'dataset_hash':dataset_hash}, run_id)
@@ -184,23 +212,29 @@ class InstitutionalPipeline:
         # Create ONE bootstrap analyzer (reused across all contracts)
         ba = BootstrapAnalyzer(n_iterations=config['n_bootstrap'])
 
-        if verbose: print(f"\n  PASS 1: Scoring {len(contracts)} contracts...")
+        logger.info("Pass 1: Scoring contracts", extra={"run_id": run_id, "n_contracts": len(contracts)})
         scores, errors = [], []
         t0 = time.time()
         for i, con in enumerate(contracts):
-            if verbose and (i+1) % 100 == 0:
+            if (i+1) % 100 == 0:
                 el = time.time()-t0; rate = (i+1)/el
-                print(f"    [{i+1}/{len(contracts)}] {rate:.1f}/sec, ETA {(len(contracts)-i-1)/rate:.0f}s")
+                logger.info("Scoring progress",
+                    extra={"run_id": run_id, "scored": i+1, "total": len(contracts),
+                           "rate_per_sec": round(rate, 1), "eta_sec": round((len(contracts)-i-1)/rate)})
             try:
                 cseed = derive_contract_seed(run_seed, con['contract_id'])
                 con['comparables'] = select_comparables_from_cache(con['contract_id'], con['agency_name'], con['award_amount'], agency_cache)
                 scores.append(score_contract(con, cseed, config, ba))
             except Exception as e:
+                logger.error("Contract scoring failed",
+                    extra={"run_id": run_id, "contract_id": con['contract_id'], "error": str(e)})
                 errors.append({'contract_id': con['contract_id'], 'error': str(e)})
         p1t = time.time()-t0
-        if verbose: print(f"  Pass 1: {len(scores)} scored, {len(errors)} errors, {p1t:.1f}s")
+        logger.info("Pass 1 complete",
+            extra={"run_id": run_id, "n_scored": len(scores), "n_errors": len(errors),
+                   "elapsed_sec": round(p1t, 1), "rate_per_sec": round(len(scores)/p1t, 1) if p1t > 0 else 0})
 
-        if verbose: print(f"\n  PASS 2: FDR correction...")
+        logger.info("Pass 2: FDR correction", extra={"run_id": run_id})
         scorable = [s for s in scores if not s['insufficient_comparables']]
         raw_pv = [s['raw_pvalue'] for s in scorable]
         if len(raw_pv) > 1:
@@ -215,26 +249,26 @@ class InstitutionalPipeline:
                 s['fdr_adjusted_pvalue']=float(adj[fi]); s['survives_fdr']=bool(surv[fi])
                 s['tier'], s['triage_priority'] = assign_tier(s, adj[fi], surv[fi]); fi+=1
 
-        if verbose: print(f"  Persisting {len(scores)} scores...")
+        logger.info("Persisting scores", extra={"run_id": run_id, "n_scores": len(scores)})
         self._persist_scores(run_id, scores)
         tc = {}
         for s in scores: tc[s['tier']] = tc.get(s['tier'],0)+1
         self._finalize_run(run_id, len(scores), len(errors), tc, p1t)
         append_audit_entry(self.db_path, 'RUN_COMPLETED', {'run_id':run_id,'scored':len(scores),'tiers':tc}, run_id)
 
-        # Extended summary per watchlist
+        # Extended summary
         ci_widths = [s['markup_ci_upper']-s['markup_ci_lower'] for s in scores if s.get('markup_ci_upper') is not None and s.get('markup_ci_lower') is not None]
         n_fdr_tests = len(scorable)
         n_fdr_sig = sum(1 for s in scores if s.get('survives_fdr'))
 
-        if verbose:
-            print(f"\n  RESULTS:")
-            for t in ['RED','YELLOW','GREEN','GRAY']: print(f"    {t}: {tc.get(t,0)}")
-            print(f"    %GRAY: {tc.get('GRAY',0)/len(scores)*100:.1f}%")
-            print(f"    Median CI width: {np.median(ci_widths):.1f}%" if ci_widths else "    Median CI width: N/A")
-            print(f"    FDR tests: {n_fdr_tests}, significant: {n_fdr_sig}")
-            print(f"    Time: {p1t:.1f}s ({len(scores)/p1t:.1f} contracts/sec)")
-            print(f"\n  Run ID: {run_id}"); print("="*70)
+        logger.info("Pipeline complete",
+            extra={"run_id": run_id, "tier_RED": tc.get('RED', 0), "tier_YELLOW": tc.get('YELLOW', 0),
+                   "tier_GREEN": tc.get('GREEN', 0), "tier_GRAY": tc.get('GRAY', 0),
+                   "pct_gray": round(tc.get('GRAY', 0)/len(scores)*100, 1) if scores else 0,
+                   "median_ci_width": round(float(np.median(ci_widths)), 1) if ci_widths else None,
+                   "fdr_tests": n_fdr_tests, "fdr_significant": n_fdr_sig,
+                   "elapsed_sec": round(p1t, 1),
+                   "rate_per_sec": round(len(scores)/p1t, 1) if p1t > 0 else 0})
         return {'run_id':run_id,'run_seed':run_seed,'config_hash':config_hash,'dataset_hash':dataset_hash,
             'n_contracts':len(contracts),'n_scored':len(scores),'n_errors':len(errors),'tier_counts':tc,'pass1_time':round(p1t,1)}
 
