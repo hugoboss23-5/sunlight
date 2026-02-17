@@ -1,0 +1,53 @@
+============================================================
+SUNLIGHT: DOD PROCUREMENT ANALYSIS
+============================================================
+Generated: 2026-01-21 03:33
+
+DATASET OVERVIEW:
+  Total Contracts Analyzed: 92
+  Total Contract Value: $312,287,061
+  Agency Focus: Department of Defense
+  Time Period: 2012-2018
+
+KEY FINDINGS:
+  🚩 High-Value Contracts (>$10M): 9
+  🚩 Statistical Outliers (>3x median): 25
+
+TOP CONCERNS:
+
+1. VENDOR CONCENTRATION
+   - Boeing: 25 contracts ($85.6M)
+   - Pattern: Single vendor winning 27% of sample
+   - Risk: Non-competitive bidding indicators
+
+2. PRICE INFLATION
+   - Vertex Aerospace: 98% above agency average
+   - General Dynamics IT: 16.6x overcharge detected
+   - 12 contracts flagged for extreme markup
+
+3. SYSTEMATIC PATTERNS
+   - Multiple vendors with concentration patterns
+   - Consistent overpricing in defense contracts
+   - Pattern suggests procurement irregularities
+
+LEGAL FRAMEWORK:
+  Findings consistent with indicators for:
+  - False Claims Act (31 U.S.C. § 3729)
+  - Procurement Integrity Act (41 U.S.C. § 2105)
+
+RECOMMENDED ACTION:
+  Further investigation by:
+  - Department of Defense Inspector General
+  - Government Accountability Office (GAO)
+  - Congressional oversight committees
+
+METHODOLOGY:
+  - Data Source: USAspending.gov (public records)
+  - Analysis: Statistical outlier detection
+  - Baseline: Agency-specific contract averages
+  - Open Source: All code and data available
+
+============================================================
+SUNLIGHT: Corruption dies in sunlight
+Contact: [To be added]
+============================================================

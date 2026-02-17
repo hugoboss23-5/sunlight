@@ -1,0 +1,229 @@
+[
+  {
+    "vendor": "THE BOEING COMPANY",
+    "contract_count": 25,
+    "total_value": 85598194.77,
+    "average_contract": 3423927.7907999996,
+    "agency_baseline": 3548716.5997727276,
+    "markup_percentage": -3.516448988367228,
+    "contracts": [
+      {
+        "contract_id": "Z555",
+        "amount": 28286423.41,
+        "agency": "Department of Defense",
+        "description": "F/A-18 A-D AND E/F MODIFICATIONS",
+        "date": "2015-09-25"
+      },
+      {
+        "contract_id": "Z526",
+        "amount": 12763318.1,
+        "agency": "Department of Defense",
+        "description": "O&A LABOR",
+        "date": "2012-10-25"
+      },
+      {
+        "contract_id": "Z556",
+        "amount": 11947455.4,
+        "agency": "Department of Defense",
+        "description": "F/A-18 A-D AND E/F MODIFICATIONS",
+        "date": "2015-09-29"
+      },
+      {
+        "contract_id": "ZB66",
+        "amount": 8473500.0,
+        "agency": "Department of Defense",
+        "description": "PITCH LINK ASSEMBLY APACHE SPARES",
+        "date": "2017-11-09"
+      },
+      {
+        "contract_id": "Z509",
+        "amount": 7445777.31,
+        "agency": "Department of Defense",
+        "description": "O&A LABOR",
+        "date": "2011-10-12"
+      }
+    ],
+    "red_flags": [
+      "VENDOR_CONCENTRATION: Won 25 contracts",
+      "STATISTICAL_SIGNIFICANCE: Based on 88 contract sample"
+    ],
+    "generated_at": "2026-01-21T03:30:57.142076"
+  },
+  {
+    "vendor": "VERTEX AEROSPACE LLC",
+    "contract_count": 11,
+    "total_value": 77342697.77,
+    "average_contract": 7031154.342727273,
+    "agency_baseline": 3548716.5997727276,
+    "markup_percentage": 98.13231474098475,
+    "contracts": [
+      {
+        "contract_id": "Z550",
+        "amount": 36888880.81,
+        "agency": "Department of Defense",
+        "description": "THE NAVAL AIR SYSTEMS COMMAND (NAVAIR) HAS A REQUIREMENT TO PROVIDE TH-57 CONTRACTOR LOGISTICS SUPPORT (CLS), WHICH CONSISTS OF ALL LOGISTICS SERVICES AND MATERIALS FOR ORGANIZATIONAL AND DEPOT LEVEL SERVICES REQUIRED TO SUPPORT AND MAINTAIN THE TH-57 FLEET. IGF::CT::IGF",
+        "date": "2016-10-28"
+      },
+      {
+        "contract_id": "Z527",
+        "amount": 19011209.79,
+        "agency": "Department of Defense",
+        "description": "IGF::CT::IGF T-45 U.S.N. AIRCRAFT MAINTENANCE AND LOGISTICS SUPPORT (CLS)",
+        "date": "2016-01-29"
+      },
+      {
+        "contract_id": "Z548",
+        "amount": 12323288.24,
+        "agency": "Department of Defense",
+        "description": "IGF::CT::IGF T-45 U.S.N. AIRCRAFT MAINTENANCE AND LOGISTICS SUPPORT (CLS)",
+        "date": "2016-10-25"
+      },
+      {
+        "contract_id": "Z531",
+        "amount": 2581518.17,
+        "agency": "Department of Defense",
+        "description": "IGF::CT::IGF T-45 U.S.N. AIRCRAFT MAINTENANCE AND LOGISTICS SUPPORT (CLS)",
+        "date": "2016-05-16"
+      },
+      {
+        "contract_id": "Z545",
+        "amount": 2136663.45,
+        "agency": "Department of Defense",
+        "description": "IGF::CT::IGF T-45 U.S.N. AIRCRAFT MAINTENANCE AND LOGISTICS SUPPORT (CLS)",
+        "date": "2016-10-19"
+      }
+    ],
+    "red_flags": [
+      "VENDOR_CONCENTRATION: Won 11 contracts",
+      "STATISTICAL_SIGNIFICANCE: Based on 88 contract sample"
+    ],
+    "generated_at": "2026-01-21T03:30:57.142467"
+  },
+  {
+    "vendor": "BAE SYSTEMS TECHNOLOGY SOLUTIONS & SERVICES INC.",
+    "contract_count": 3,
+    "total_value": 4126593.62,
+    "average_contract": 1375531.2066666668,
+    "agency_baseline": 3548716.5997727276,
+    "markup_percentage": -61.23862900873064,
+    "contracts": [
+      {
+        "contract_id": "Z528",
+        "amount": 3257976.0,
+        "agency": "Department of Defense",
+        "description": "T-34/T-44/T-6 CLS",
+        "date": "2013-06-03"
+      },
+      {
+        "contract_id": "Z521",
+        "amount": 513185.59,
+        "agency": "Department of Defense",
+        "description": "T-34/T-44/T-6 CLS",
+        "date": "2013-04-05"
+      },
+      {
+        "contract_id": "Z525",
+        "amount": 355432.03,
+        "agency": "Department of Defense",
+        "description": "T-34/T-44/T-6 CLS",
+        "date": "2013-04-30"
+      }
+    ],
+    "red_flags": [
+      "STATISTICAL_SIGNIFICANCE: Based on 88 contract sample"
+    ],
+    "generated_at": "2026-01-21T03:30:57.142795"
+  },
+  {
+    "vendor": "HAMILTON SUNDSTRAND CORPORATION",
+    "contract_count": 8,
+    "total_value": 3261827.5,
+    "average_contract": 407728.4375,
+    "agency_baseline": 3548716.5997727276,
+    "markup_percentage": -88.51053821750341,
+    "contracts": [
+      {
+        "contract_id": "XGST",
+        "amount": 2586390.1,
+        "agency": "Department of Defense",
+        "description": "8504514325!ENGINEERING",
+        "date": "2017-08-09"
+      },
+      {
+        "contract_id": "Y85G",
+        "amount": 209560.72,
+        "agency": "Department of Defense",
+        "description": "8501627326!ENGINEERING",
+        "date": "2014-12-16"
+      },
+      {
+        "contract_id": "XK92",
+        "amount": 193800.0,
+        "agency": "Department of Defense",
+        "description": "8501115430!BODY,VALVE",
+        "date": "2014-07-14"
+      },
+      {
+        "contract_id": "Z35J",
+        "amount": 116509.5,
+        "agency": "Department of Defense",
+        "description": "8501499581!SLEEVE AND SLIDE,DI",
+        "date": "2014-10-28"
+      },
+      {
+        "contract_id": "Z1L0",
+        "amount": 96381.04,
+        "agency": "Department of Defense",
+        "description": "8503327621!SOLENOID AND CONNEC",
+        "date": "2016-06-10"
+      }
+    ],
+    "red_flags": [
+      "VENDOR_CONCENTRATION: Won 8 contracts",
+      "STATISTICAL_SIGNIFICANCE: Based on 88 contract sample"
+    ],
+    "generated_at": "2026-01-21T03:30:57.143118"
+  },
+  {
+    "vendor": "CELLCO PARTNERSHIP",
+    "contract_count": 4,
+    "total_value": 977598.46,
+    "average_contract": 244399.615,
+    "agency_baseline": 3548716.5997727276,
+    "markup_percentage": -93.11301401144144,
+    "contracts": [
+      {
+        "contract_id": "ZL05",
+        "amount": 393347.6,
+        "agency": "Department of Defense",
+        "description": "IGF::OT::IGF NATIONWIDE WIRELESS SERVICES CONTRACT",
+        "date": "2018-03-23"
+      },
+      {
+        "contract_id": "ZL17",
+        "amount": 256292.03,
+        "agency": "Department of Defense",
+        "description": "WIRELESS SERVICES",
+        "date": "2017-10-19"
+      },
+      {
+        "contract_id": "ZL50",
+        "amount": 243702.71,
+        "agency": "Department of Defense",
+        "description": "IGF::OT::IGF",
+        "date": "2015-09-11"
+      },
+      {
+        "contract_id": "ZL04",
+        "amount": 84256.12,
+        "agency": "Department of Defense",
+        "description": "IGF::OT::IGF NATIONWIDE WIRELESS SERVICES CONTRACT",
+        "date": "2018-03-20"
+      }
+    ],
+    "red_flags": [
+      "STATISTICAL_SIGNIFICANCE: Based on 88 contract sample"
+    ],
+    "generated_at": "2026-01-21T03:30:57.143429"
+  }
+]

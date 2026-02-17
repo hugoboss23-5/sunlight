@@ -1,0 +1,36 @@
+🔍 SUNLIGHT FRAUD DETECTION
+==================================================
+📊 Analyzing 92 contracts...
+
+🚩 FINDINGS:
+  Price Outliers: 4
+  Vendor Concentration: 6 vendors
+
+💰 TOP PRICE OUTLIERS:
+  1. GENERAL DYNAMICS INFORMATION TECHNOLOGY, INC.
+     Amount: $58,845,137
+     Risk: 100/100
+     Evidence: Amount $58,845,137 is 6.3 std devs above median $453,059
+
+  2. DYNCORP INTERNATIONAL LLC
+     Amount: $40,840,821
+     Risk: 87/100
+     Evidence: Amount $40,840,821 is 4.4 std devs above median $453,059
+
+  3. VERTEX AEROSPACE LLC
+     Amount: $36,888,881
+     Risk: 78/100
+     Evidence: Amount $36,888,881 is 3.9 std devs above median $453,059
+
+  4. THE BOEING COMPANY
+     Amount: $28,286,423
+     Risk: 60/100
+     Evidence: Amount $28,286,423 is 3.0 std devs above median $453,059
+
+🏢 VENDOR CONCENTRATION (3+ contracts):
+  THE BOEING COMPANY: 25 contracts
+  VERTEX AEROSPACE LLC: 11 contracts
+  HAMILTON SUNDSTRAND CORPORATION: 8 contracts
+  SIKORSKY AIRCRAFT CORPORATION: 6 contracts
+  CELLCO PARTNERSHIP: 4 contracts
+  BAE SYSTEMS TECHNOLOGY SOLUTIONS & SERVICES INC.: 3 contracts

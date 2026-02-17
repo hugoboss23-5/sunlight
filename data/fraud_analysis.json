@@ -1,0 +1,685 @@
+{
+  "analysis_date": "2026-01-21",
+  "total_analyzed": 25,
+  "methodology": "Multi-layer fraud detection (price, donations, patterns)",
+  "results": [
+    {
+      "contract_id": "X001",
+      "vendor_name": "TECHNICA CORPORATION",
+      "amount": 113655241.05,
+      "agency": "Department of Defense",
+      "confidence": 70,
+      "tier": "\ud83d\udfe1 YELLOW",
+      "reasoning": [
+        "Contract: $113,655,241",
+        "Baseline: $44,473,290 (n=6, MEGA)",
+        "Markup: 156% | Z-score: 1.92",
+        "Type: STANDARD_IT (STRICT)",
+        "\u26a0\ufe0f  ELEVATED: >150% markup (investigation-worthy)"
+      ],
+      "legal_violations": [],
+      "evidence": {
+        "valid": true,
+        "median": 44473289.655,
+        "mean": 54437043.625,
+        "stdev": 30799225.94023711,
+        "z_score": 1.9227170689259245,
+        "markup_pct": 155.55843053589376,
+        "sample_size": 6,
+        "size_category": "MEGA"
+      },
+      "has_political_donations": false,
+      "donation_amount": 0
+    },
+    {
+      "contract_id": "YJ02",
+      "vendor_name": "GENERAL DYNAMICS INFORMATION TECHNOLOGY, INC.",
+      "amount": 58845137.17,
+      "agency": "Department of Defense",
+      "confidence": 0,
+      "tier": "\ud83d\udfe2 GREEN",
+      "reasoning": [
+        "Contract: $58,845,137",
+        "Baseline: $44,473,290 (n=6, MEGA)",
+        "Markup: 32% | Z-score: 0.14",
+        "Type: UNKNOWN (MEDIUM_TOLERANCE)",
+        "\ud83d\udcb0 Political Donations: $1,200,000",
+        "   Recipients: Defense Appropriations Subcommittee"
+      ],
+      "legal_violations": [],
+      "evidence": {
+        "valid": true,
+        "median": 44473289.655,
+        "mean": 54437043.625,
+        "stdev": 30799225.94023711,
+        "z_score": 0.143123517245319,
+        "markup_pct": 32.31568347313434,
+        "sample_size": 6,
+        "size_category": "MEGA"
+      },
+      "has_political_donations": true,
+      "donation_amount": 1200000.0
+    },
+    {
+      "contract_id": "WA54",
+      "vendor_name": "VERTEX AEROSPACE LLC",
+      "amount": 48105758.2,
+      "agency": "Department of Defense",
+      "confidence": 0,
+      "tier": "\ud83d\udfe2 GREEN",
+      "reasoning": [
+        "Contract: $48,105,758",
+        "Baseline: $44,473,290 (n=6, MEGA)",
+        "Markup: 8% | Z-score: -0.21",
+        "Type: AEROSPACE (MEDIUM_TOLERANCE)"
+      ],
+      "legal_violations": [],
+      "evidence": {
+        "valid": true,
+        "median": 44473289.655,
+        "mean": 54437043.625,
+        "stdev": 30799225.94023711,
+        "z_score": -0.20556638135274044,
+        "markup_pct": 8.167753213622717,
+        "sample_size": 6,
+        "size_category": "MEGA"
+      },
+      "has_political_donations": false,
+      "donation_amount": 0
+    },
+    {
+      "contract_id": "Z504",
+      "vendor_name": "DYNCORP INTERNATIONAL LLC",
+      "amount": 40840821.11,
+      "agency": "Department of Defense",
+      "confidence": 0,
+      "tier": "\ud83d\udfe2 GREEN",
+      "reasoning": [
+        "Contract: $40,840,821",
+        "Baseline: $44,473,290 (n=6, MEGA)",
+        "Markup: -8% | Z-score: -0.44",
+        "Type: STANDARD_SERVICE (STRICT)"
+      ],
+      "legal_violations": [],
+      "evidence": {
+        "valid": true,
+        "median": 44473289.655,
+        "mean": 54437043.625,
+        "stdev": 30799225.94023711,
+        "z_score": -0.44144689030114403,
+        "markup_pct": -8.167753213622717,
+        "sample_size": 6,
+        "size_category": "MEGA"
+      },
+      "has_political_donations": false,
+      "donation_amount": 0
+    },
+    {
+      "contract_id": "Z550",
+      "vendor_name": "VERTEX AEROSPACE LLC",
+      "amount": 36888880.81,
+      "agency": "Department of Defense",
+      "confidence": 0,
+      "tier": "\ud83d\udfe2 GREEN",
+      "reasoning": [
+        "Contract: $36,888,881",
+        "Baseline: $44,473,290 (n=6, MEGA)",
+        "Markup: -17% | Z-score: -0.57",
+        "Type: STANDARD_SERVICE (STRICT)"
+      ],
+      "legal_violations": [],
+      "evidence": {
+        "valid": true,
+        "median": 44473289.655,
+        "mean": 54437043.625,
+        "stdev": 30799225.94023711,
+        "z_score": -0.5697598650385076,
+        "markup_pct": -17.053851657558475,
+        "sample_size": 6,
+        "size_category": "MEGA"
+      },
+      "has_political_donations": false,
+      "donation_amount": 0
+    },
+    {
+      "contract_id": "Z555",
+      "vendor_name": "THE BOEING COMPANY",
+      "amount": 28286423.41,
+      "agency": "Department of Defense",
+      "confidence": 0,
+      "tier": "\ud83d\udfe2 GREEN",
+      "reasoning": [
+        "Contract: $28,286,423",
+        "Baseline: $44,473,290 (n=6, MEGA)",
+        "Markup: -36% | Z-score: -0.85",
+        "Type: UNKNOWN (MEDIUM_TOLERANCE)",
+        "\ud83d\udcb0 Political Donations: $4,300,000",
+        "   Recipients: House Appropriations Committee, Senate Armed Services Committee Members"
+      ],
+      "legal_violations": [],
+      "evidence": {
+        "valid": true,
+        "median": 44473289.655,
+        "mean": 54437043.625,
+        "stdev": 30799225.94023711,
+        "z_score": -0.8490674494788514,
+        "markup_pct": -36.39682688321249,
+        "sample_size": 6,
+        "size_category": "MEGA"
+      },
+      "has_political_donations": true,
+      "donation_amount": 4300000.0
+    },
+    {
+      "contract_id": "WCO00199709D68S73003",
+      "vendor_name": "CDM FED. PROGRAMS CORP.",
+      "amount": 25319503.0,
+      "agency": "Environmental Protection Agency",
+      "confidence": 0,
+      "tier": "\ud83d\udfe2 GREEN",
+      "reasoning": [
+        "Insufficient comparable contracts"
+      ],
+      "legal_violations": [],
+      "evidence": {},
+      "has_political_donations": false,
+      "donation_amount": 0
+    },
+    {
+      "contract_id": "W91ZRS23C0001",
+      "vendor_name": "YULISTA CONTRACT SERVICES LLC",
+      "amount": 21733917.33,
+      "agency": "Department of Defense",
+      "confidence": 0,
+      "tier": "\ud83d\udfe2 GREEN",
+      "reasoning": [
+        "Contract: $21,733,917",
+        "Baseline: $10,776,665 (n=18, LARGE)",
+        "Markup: 102% | Z-score: 2.27",
+        "Type: STANDARD_SERVICE (STRICT)"
+      ],
+      "legal_violations": [],
+      "evidence": {
+        "valid": true,
+        "median": 10776665.219999999,
+        "mean": 10918647.665555555,
+        "stdev": 4769332.859734957,
+        "z_score": 2.2676692909719605,
+        "markup_pct": 101.67572144363226,
+        "sample_size": 18,
+        "size_category": "LARGE"
+      },
+      "has_political_donations": false,
+      "donation_amount": 0
+    },
+    {
+      "contract_id": "Z527",
+      "vendor_name": "VERTEX AEROSPACE LLC",
+      "amount": 19011209.79,
+      "agency": "Department of Defense",
+      "confidence": 0,
+      "tier": "\ud83d\udfe2 GREEN",
+      "reasoning": [
+        "Contract: $19,011,210",
+        "Baseline: $10,776,665 (n=18, LARGE)",
+        "Markup: 76% | Z-score: 1.70",
+        "Type: STANDARD_SERVICE (STRICT)"
+      ],
+      "legal_violations": [],
+      "evidence": {
+        "valid": true,
+        "median": 10776665.219999999,
+        "mean": 10918647.665555555,
+        "stdev": 4769332.859734957,
+        "z_score": 1.69679122058471,
+        "markup_pct": 76.41087852221506,
+        "sample_size": 18,
+        "size_category": "LARGE"
+      },
+      "has_political_donations": false,
+      "donation_amount": 0
+    },
+    {
+      "contract_id": "WE14",
+      "vendor_name": "AGVIQ LLC",
+      "amount": 17878088.46,
+      "agency": "Department of Defense",
+      "confidence": 0,
+      "tier": "\ud83d\udfe2 GREEN",
+      "reasoning": [
+        "Contract: $17,878,088",
+        "Baseline: $10,776,665 (n=18, LARGE)",
+        "Markup: 66% | Z-score: 1.46",
+        "Type: UNKNOWN (MEDIUM_TOLERANCE)"
+      ],
+      "legal_violations": [],
+      "evidence": {
+        "valid": true,
+        "median": 10776665.219999999,
+        "mean": 10918647.665555555,
+        "stdev": 4769332.859734957,
+        "z_score": 1.4592063500535792,
+        "markup_pct": 65.89629625703454,
+        "sample_size": 18,
+        "size_category": "LARGE"
+      },
+      "has_political_donations": false,
+      "donation_amount": 0
+    },
+    {
+      "contract_id": "WK02",
+      "vendor_name": "APPTIS, INC.",
+      "amount": 12834340.68,
+      "agency": "Department of Defense",
+      "confidence": 0,
+      "tier": "\ud83d\udfe2 GREEN",
+      "reasoning": [
+        "Contract: $12,834,341",
+        "Baseline: $10,776,665 (n=18, LARGE)",
+        "Markup: 19% | Z-score: 0.40",
+        "Type: STANDARD_IT (STRICT)"
+      ],
+      "legal_violations": [],
+      "evidence": {
+        "valid": true,
+        "median": 10776665.219999999,
+        "mean": 10918647.665555555,
+        "stdev": 4769332.859734957,
+        "z_score": 0.401668969389338,
+        "markup_pct": 19.0938051613707,
+        "sample_size": 18,
+        "size_category": "LARGE"
+      },
+      "has_political_donations": false,
+      "donation_amount": 0
+    },
+    {
+      "contract_id": "Z526",
+      "vendor_name": "THE BOEING COMPANY",
+      "amount": 12763318.1,
+      "agency": "Department of Defense",
+      "confidence": 0,
+      "tier": "\ud83d\udfe2 GREEN",
+      "reasoning": [
+        "Contract: $12,763,318",
+        "Baseline: $10,776,665 (n=18, LARGE)",
+        "Markup: 18% | Z-score: 0.39",
+        "Type: UNKNOWN (MEDIUM_TOLERANCE)",
+        "\ud83d\udcb0 Political Donations: $4,300,000",
+        "   Recipients: House Appropriations Committee, Senate Armed Services Committee Members"
+      ],
+      "legal_violations": [],
+      "evidence": {
+        "valid": true,
+        "median": 10776665.219999999,
+        "mean": 10918647.665555555,
+        "stdev": 4769332.859734957,
+        "z_score": 0.38677745686782633,
+        "markup_pct": 18.434764738845633,
+        "sample_size": 18,
+        "size_category": "LARGE"
+      },
+      "has_political_donations": true,
+      "donation_amount": 4300000.0
+    },
+    {
+      "contract_id": "Z548",
+      "vendor_name": "VERTEX AEROSPACE LLC",
+      "amount": 12323288.24,
+      "agency": "Department of Defense",
+      "confidence": 0,
+      "tier": "\ud83d\udfe2 GREEN",
+      "reasoning": [
+        "Contract: $12,323,288",
+        "Baseline: $10,776,665 (n=18, LARGE)",
+        "Markup: 14% | Z-score: 0.29",
+        "Type: STANDARD_SERVICE (STRICT)"
+      ],
+      "legal_violations": [],
+      "evidence": {
+        "valid": true,
+        "median": 10776665.219999999,
+        "mean": 10918647.665555555,
+        "stdev": 4769332.859734957,
+        "z_score": 0.294515106358608,
+        "markup_pct": 14.351591966777285,
+        "sample_size": 18,
+        "size_category": "LARGE"
+      },
+      "has_political_donations": false,
+      "donation_amount": 0
+    },
+    {
+      "contract_id": "Z556",
+      "vendor_name": "THE BOEING COMPANY",
+      "amount": 11947455.4,
+      "agency": "Department of Defense",
+      "confidence": 0,
+      "tier": "\ud83d\udfe2 GREEN",
+      "reasoning": [
+        "Contract: $11,947,455",
+        "Baseline: $10,776,665 (n=18, LARGE)",
+        "Markup: 11% | Z-score: 0.22",
+        "Type: UNKNOWN (MEDIUM_TOLERANCE)",
+        "\ud83d\udcb0 Political Donations: $4,300,000",
+        "   Recipients: House Appropriations Committee, Senate Armed Services Committee Members"
+      ],
+      "legal_violations": [],
+      "evidence": {
+        "valid": true,
+        "median": 10776665.219999999,
+        "mean": 10918647.665555555,
+        "stdev": 4769332.859734957,
+        "z_score": 0.21571313319943416,
+        "markup_pct": 10.864123141054591,
+        "sample_size": 18,
+        "size_category": "LARGE"
+      },
+      "has_political_donations": true,
+      "donation_amount": 4300000.0
+    },
+    {
+      "contract_id": "WE27",
+      "vendor_name": "RESOLUTION CONSULTANTS - AN AECOM-ENSAFE JOINT VENTURE",
+      "amount": 11454364.0,
+      "agency": "Department of Defense",
+      "confidence": 0,
+      "tier": "\ud83d\udfe2 GREEN",
+      "reasoning": [
+        "Contract: $11,454,364",
+        "Baseline: $10,776,665 (n=18, LARGE)",
+        "Markup: 6% | Z-score: 0.11",
+        "Type: STANDARD_SERVICE (STRICT)"
+      ],
+      "legal_violations": [],
+      "evidence": {
+        "valid": true,
+        "median": 10776665.219999999,
+        "mean": 10918647.665555555,
+        "stdev": 4769332.859734957,
+        "z_score": 0.11232521407076117,
+        "markup_pct": 6.288575975639348,
+        "sample_size": 18,
+        "size_category": "LARGE"
+      },
+      "has_political_donations": false,
+      "donation_amount": 0
+    },
+    {
+      "contract_id": "ZL57",
+      "vendor_name": "CACI-WGI, LLC",
+      "amount": 11303606.44,
+      "agency": "Department of Defense",
+      "confidence": 0,
+      "tier": "\ud83d\udfe2 GREEN",
+      "reasoning": [
+        "Contract: $11,303,606",
+        "Baseline: $10,776,665 (n=18, LARGE)",
+        "Markup: 5% | Z-score: 0.08",
+        "Type: UNKNOWN (MEDIUM_TOLERANCE)"
+      ],
+      "legal_violations": [],
+      "evidence": {
+        "valid": true,
+        "median": 10776665.219999999,
+        "mean": 10918647.665555555,
+        "stdev": 4769332.859734957,
+        "z_score": 0.08071543458299053,
+        "markup_pct": 4.889650084165839,
+        "sample_size": 18,
+        "size_category": "LARGE"
+      },
+      "has_political_donations": false,
+      "donation_amount": 0
+    },
+    {
+      "contract_id": "WB54",
+      "vendor_name": "GENERAL DYNAMICS MISSION SYSTEMS, INC.",
+      "amount": 10249724.0,
+      "agency": "Department of Defense",
+      "confidence": 0,
+      "tier": "\ud83d\udfe2 GREEN",
+      "reasoning": [
+        "Contract: $10,249,724",
+        "Baseline: $10,776,665 (n=18, LARGE)",
+        "Markup: -5% | Z-score: -0.14",
+        "Type: STANDARD_SERVICE (STRICT)",
+        "\ud83d\udcb0 Political Donations: $1,200,000",
+        "   Recipients: Defense Appropriations Subcommittee"
+      ],
+      "legal_violations": [],
+      "evidence": {
+        "valid": true,
+        "median": 10776665.219999999,
+        "mean": 10918647.665555555,
+        "stdev": 4769332.859734957,
+        "z_score": -0.14025518562626157,
+        "markup_pct": -4.8896500841658215,
+        "sample_size": 18,
+        "size_category": "LARGE"
+      },
+      "has_political_donations": true,
+      "donation_amount": 1200000.0
+    },
+    {
+      "contract_id": "ZJ03",
+      "vendor_name": "AECOM + TETRA TECH JOINT VENTURE",
+      "amount": 8930585.69,
+      "agency": "Department of Defense",
+      "confidence": 0,
+      "tier": "\ud83d\udfe2 GREEN",
+      "reasoning": [
+        "Contract: $8,930,586",
+        "Baseline: $10,776,665 (n=18, LARGE)",
+        "Markup: -17% | Z-score: -0.42",
+        "Type: UNKNOWN (MEDIUM_TOLERANCE)"
+      ],
+      "legal_violations": [],
+      "evidence": {
+        "valid": true,
+        "median": 10776665.219999999,
+        "mean": 10918647.665555555,
+        "stdev": 4769332.859734957,
+        "z_score": -0.41684278158476806,
+        "markup_pct": -17.130341272678038,
+        "sample_size": 18,
+        "size_category": "LARGE"
+      },
+      "has_political_donations": false,
+      "donation_amount": 0
+    },
+    {
+      "contract_id": "ZB66",
+      "vendor_name": "THE BOEING COMPANY",
+      "amount": 8473500.0,
+      "agency": "Department of Defense",
+      "confidence": 0,
+      "tier": "\ud83d\udfe2 GREEN",
+      "reasoning": [
+        "Contract: $8,473,500",
+        "Baseline: $10,776,665 (n=18, LARGE)",
+        "Markup: -21% | Z-score: -0.51",
+        "Type: UNKNOWN (MEDIUM_TOLERANCE)",
+        "\ud83d\udcb0 Political Donations: $4,300,000",
+        "   Recipients: House Appropriations Committee, Senate Armed Services Committee Members"
+      ],
+      "legal_violations": [],
+      "evidence": {
+        "valid": true,
+        "median": 10776665.219999999,
+        "mean": 10918647.665555555,
+        "stdev": 4769332.859734957,
+        "z_score": -0.5126812779621002,
+        "markup_pct": -21.3717803511762,
+        "sample_size": 18,
+        "size_category": "LARGE"
+      },
+      "has_political_donations": true,
+      "donation_amount": 4300000.0
+    },
+    {
+      "contract_id": "Z509",
+      "vendor_name": "THE BOEING COMPANY",
+      "amount": 7445777.31,
+      "agency": "Department of Defense",
+      "confidence": 0,
+      "tier": "\ud83d\udfe2 GREEN",
+      "reasoning": [
+        "Contract: $7,445,777",
+        "Baseline: $10,776,665 (n=18, LARGE)",
+        "Markup: -31% | Z-score: -0.73",
+        "Type: UNKNOWN (MEDIUM_TOLERANCE)",
+        "\ud83d\udcb0 Political Donations: $4,300,000",
+        "   Recipients: House Appropriations Committee, Senate Armed Services Committee Members"
+      ],
+      "legal_violations": [],
+      "evidence": {
+        "valid": true,
+        "median": 10776665.219999999,
+        "mean": 10918647.665555555,
+        "stdev": 4769332.859734957,
+        "z_score": -0.7281669067125147,
+        "markup_pct": -30.908336131833554,
+        "sample_size": 18,
+        "size_category": "LARGE"
+      },
+      "has_political_donations": true,
+      "donation_amount": 4300000.0
+    },
+    {
+      "contract_id": "WE24",
+      "vendor_name": "TETRA TECH INC",
+      "amount": 7255118.0,
+      "agency": "Department of Defense",
+      "confidence": 0,
+      "tier": "\ud83d\udfe2 GREEN",
+      "reasoning": [
+        "Contract: $7,255,118",
+        "Baseline: $10,776,665 (n=18, LARGE)",
+        "Markup: -33% | Z-score: -0.77",
+        "Type: STANDARD_SERVICE (STRICT)"
+      ],
+      "legal_violations": [],
+      "evidence": {
+        "valid": true,
+        "median": 10776665.219999999,
+        "mean": 10918647.665555555,
+        "stdev": 4769332.859734957,
+        "z_score": -0.7681430030780335,
+        "markup_pct": -32.67752266688673,
+        "sample_size": 18,
+        "size_category": "LARGE"
+      },
+      "has_political_donations": false,
+      "donation_amount": 0
+    },
+    {
+      "contract_id": "WE13",
+      "vendor_name": "APTIM FEDERAL SERVICES, LLC",
+      "amount": 6449771.0,
+      "agency": "Department of Defense",
+      "confidence": 0,
+      "tier": "\ud83d\udfe2 GREEN",
+      "reasoning": [
+        "Contract: $6,449,771",
+        "Baseline: $10,776,665 (n=18, LARGE)",
+        "Markup: -40% | Z-score: -0.94",
+        "Type: UNKNOWN (MEDIUM_TOLERANCE)"
+      ],
+      "legal_violations": [],
+      "evidence": {
+        "valid": true,
+        "median": 10776665.219999999,
+        "mean": 10918647.665555555,
+        "stdev": 4769332.859734957,
+        "z_score": -0.9370024691050608,
+        "markup_pct": -40.15058584143342,
+        "sample_size": 18,
+        "size_category": "LARGE"
+      },
+      "has_political_donations": false,
+      "donation_amount": 0
+    },
+    {
+      "contract_id": "W91ZRS17C0002",
+      "vendor_name": "CUTTER ENTERPRISES, LLC",
+      "amount": 6364339.0,
+      "agency": "Department of Defense",
+      "confidence": 0,
+      "tier": "\ud83d\udfe2 GREEN",
+      "reasoning": [
+        "Contract: $6,364,339",
+        "Baseline: $10,776,665 (n=18, LARGE)",
+        "Markup: -41% | Z-score: -0.95",
+        "Type: UNKNOWN (MEDIUM_TOLERANCE)"
+      ],
+      "legal_violations": [],
+      "evidence": {
+        "valid": true,
+        "median": 10776665.219999999,
+        "mean": 10918647.665555555,
+        "stdev": 4769332.859734957,
+        "z_score": -0.9549152469531449,
+        "markup_pct": -40.94333571586999,
+        "sample_size": 18,
+        "size_category": "LARGE"
+      },
+      "has_political_donations": false,
+      "donation_amount": 0
+    },
+    {
+      "contract_id": "WE05",
+      "vendor_name": "TETRA TECH INC",
+      "amount": 5109626.25,
+      "agency": "Department of Defense",
+      "confidence": 0,
+      "tier": "\ud83d\udfe2 GREEN",
+      "reasoning": [
+        "Contract: $5,109,626",
+        "Baseline: $10,776,665 (n=18, LARGE)",
+        "Markup: -53% | Z-score: -1.22",
+        "Type: UNKNOWN (MEDIUM_TOLERANCE)"
+      ],
+      "legal_violations": [],
+      "evidence": {
+        "valid": true,
+        "median": 10776665.219999999,
+        "mean": 10918647.665555555,
+        "stdev": 4769332.859734957,
+        "z_score": -1.2179945469099374,
+        "markup_pct": -52.58620226489693,
+        "sample_size": 18,
+        "size_category": "LARGE"
+      },
+      "has_political_donations": false,
+      "donation_amount": 0
+    },
+    {
+      "contract_id": "YU01",
+      "vendor_name": "BOOZ ALLEN HAMILTON INC",
+      "amount": 5007628.29,
+      "agency": "Department of Defense",
+      "confidence": 0,
+      "tier": "\ud83d\udfe2 GREEN",
+      "reasoning": [
+        "Contract: $5,007,628",
+        "Baseline: $10,776,665 (n=18, LARGE)",
+        "Markup: -54% | Z-score: -1.24",
+        "Type: UNKNOWN (MEDIUM_TOLERANCE)"
+      ],
+      "legal_violations": [],
+      "evidence": {
+        "valid": true,
+        "median": 10776665.219999999,
+        "mean": 10918647.665555555,
+        "stdev": 4769332.859734957,
+        "z_score": -1.2393807581473868,
+        "markup_pct": -53.532672790961946,
+        "sample_size": 18,
+        "size_category": "LARGE"
+      },
+      "has_political_donations": false,
+      "donation_amount": 0
+    }
+  ]
+}

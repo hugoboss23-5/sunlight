@@ -1,0 +1,166 @@
+{
+  "cases": [
+    {
+      "id": "oracle_2011",
+      "name": "US v. Oracle Corp",
+      "year": 2011,
+      "settlement": 199500000,
+      "violation_type": "False Claims Act - Price Inflation",
+      "description": "Oracle failed to provide government pricing discounts promised in contracts",
+      "key_indicators": [
+        "Systematic price inflation across multiple contracts",
+        "Hidden commercial pricing data",
+        "Charged government rates 200-400% higher than commercial",
+        "Standard software (not specialized)"
+      ],
+      "price_markup": "200-400%",
+      "contract_type": "Standard IT software",
+      "evidence_used": [
+        "Commercial pricing comparison",
+        "Contract language analysis",
+        "Pattern across 10+ years"
+      ],
+      "outcome": "$199.5M settlement + monitoring requirements",
+      "lessons": [
+        "Price comparison to commercial rates is valid evidence",
+        "Pattern over time strengthens case",
+        "Standard products should have consistent pricing"
+      ]
+    },
+    {
+      "id": "boeing_2006",
+      "name": "US v. Boeing",
+      "year": 2006,
+      "settlement": 615000000,
+      "violation_type": "False Claims Act - Spare Parts Overcharging",
+      "description": "Boeing charged Air Force 300-600% markup on standard spare parts",
+      "key_indicators": [
+        "Standard parts charged at specialized rates",
+        "Systematic overpricing across part categories",
+        "600% markup on items with known market prices",
+        "Pattern spanning 5+ years"
+      ],
+      "price_markup": "300-600%",
+      "contract_type": "Standard spare parts",
+      "evidence_used": [
+        "Commercial part pricing databases",
+        "Industry standard markup comparison",
+        "Statistical analysis of pricing patterns"
+      ],
+      "outcome": "$615M settlement + contract reforms",
+      "lessons": [
+        "300%+ markup triggers fraud investigation",
+        "Standard items need commercial price justification",
+        "Pattern evidence more powerful than single incident"
+      ]
+    },
+    {
+      "id": "dyncorp_2005",
+      "name": "US v. DynCorp International",
+      "year": 2005,
+      "settlement": 7000000,
+      "violation_type": "False Claims Act - Labor Rate Inflation",
+      "description": "Billed senior engineer rates for junior staff work",
+      "key_indicators": [
+        "Labor rate inflation (50-100% above market)",
+        "Misrepresentation of staff qualifications",
+        "Pattern across multiple contracts",
+        "Standard services overcharged"
+      ],
+      "price_markup": "50-100%",
+      "contract_type": "Professional services",
+      "evidence_used": [
+        "Staff qualification verification",
+        "Industry labor rate standards",
+        "Contract deliverable analysis"
+      ],
+      "outcome": "$7M settlement",
+      "lessons": [
+        "Labor rate fraud is prosecutable",
+        "Qualification misrepresentation counts as false claims",
+        "50%+ markup on services triggers scrutiny"
+      ]
+    },
+    {
+      "id": "utc_2015",
+      "name": "US v. United Technologies Corp",
+      "year": 2015,
+      "settlement": 75000000,
+      "violation_type": "Procurement Integrity Act + Anti-Kickback",
+      "description": "Paid consulting fees to official's firm who influenced contracts",
+      "key_indicators": [
+        "Payment to official's related entity",
+        "Official influenced procurement decisions",
+        "Sole-source contract awards increased",
+        "Timeline: payments → contract awards"
+      ],
+      "price_markup": "Not disclosed",
+      "contract_type": "Defense systems",
+      "evidence_used": [
+        "Payment records to consulting firm",
+        "Email communications",
+        "Contract award timeline analysis",
+        "Official's decision-making authority"
+      ],
+      "outcome": "$75M settlement + 3-year debarment",
+      "lessons": [
+        "Payment to official's entities = kickback",
+        "Timeline evidence (payment → award) is crucial",
+        "Conflict of interest prosecutable even without explicit bribery"
+      ]
+    },
+    {
+      "id": "general_dynamics_2011",
+      "name": "US v. General Dynamics",
+      "year": 2011,
+      "settlement": 4000000,
+      "violation_type": "False Claims Act - Testing Fraud",
+      "description": "Failed to perform required testing, certified compliance anyway",
+      "key_indicators": [
+        "False certification of work performed",
+        "Systematic shortcuts in testing procedures",
+        "Pattern across multiple contracts"
+      ],
+      "price_markup": "N/A (performance fraud)",
+      "contract_type": "Defense equipment testing",
+      "evidence_used": [
+        "Testing record analysis",
+        "Whistleblower testimony",
+        "Contract requirement comparison"
+      ],
+      "outcome": "$4M settlement",
+      "lessons": [
+        "False certification is fraud even without price inflation",
+        "Systematic pattern strengthens case",
+        "Whistleblower evidence is powerful"
+      ]
+    }
+  ],
+  "patterns": {
+    "price_thresholds": {
+      "high_risk": ">300% of baseline",
+      "medium_risk": "200-300% of baseline",
+      "investigation_worthy": ">150% of baseline"
+    },
+    "evidence_types": [
+      "Commercial pricing comparison",
+      "Industry standard benchmarks",
+      "Pattern analysis over time",
+      "Timeline analysis (donation/payment → contract)",
+      "Qualification verification",
+      "Contract language vs actual delivery"
+    ],
+    "common_defenses": [
+      "Technical complexity justifies price",
+      "Unique requirements",
+      "Small market (limited vendors)",
+      "Emergency circumstances"
+    ],
+    "prosecutor_priorities": [
+      "Pattern evidence (multiple contracts)",
+      "Large dollar amounts (>$5M)",
+      "Clear commercial comparison available",
+      "Whistleblower testimony"
+    ]
+  }
+}

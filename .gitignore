@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+dist/
+build/
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Raw data (75GB+ of FPDS contract CSVs/zips)
+data/raw/
+
+# SQLite databases (binary, not diffable)
+*.db
+
+# Backup archives
+*.tar.gz
+
+# Temp/editor files
+*.swp
+*.swo
+*~
+.DS_Store
+*.pyTAB
+
+# IDE
+.idea/
+.vscode/
+*.code-workspace
+
+# Environment variables (may contain API keys)
+.env
+.env.local
