@@ -1,0 +1,397 @@
+{
+  "validation_date": "2026-02-17T17:39:14.664201+00:00",
+  "methodology_version": "2.0.0",
+  "parameters": {
+    "run_seed": 42,
+    "n_bootstrap": 1000,
+    "n_clean_contracts": 50,
+    "n_doj_cases": 10,
+    "n_price_fraud_cases": 9,
+    "n_non_price_cases": 1
+  },
+  "classification_metrics": {
+    "precision": 0.36,
+    "recall": 1.0,
+    "f1_score": 0.5294,
+    "accuracy": 0.7288,
+    "specificity": 0.68
+  },
+  "confusion_matrix": {
+    "true_positive": 9,
+    "false_negative": 0,
+    "false_positive": 16,
+    "true_negative": 34
+  },
+  "value_weighted_metrics": {
+    "total_fraud_value": 941400000,
+    "detected_fraud_value": 941400000,
+    "value_recall": 1.0
+  },
+  "doj_tier_distribution": {
+    "RED": 3,
+    "YELLOW": 6,
+    "GREEN": 1,
+    "GRAY": 0
+  },
+  "clean_tier_distribution": {
+    "RED": 1,
+    "YELLOW": 15,
+    "GREEN": 34,
+    "GRAY": 0
+  },
+  "per_category_breakdown": {
+    "Price Inflation": {
+      "total": 1,
+      "detected": 1,
+      "cases": [
+        {
+          "case_id": "US_v_Oracle_2011",
+          "vendor": "Oracle Corporation",
+          "markup_pct": 350,
+          "predicted_tier": "RED",
+          "detected": true
+        }
+      ],
+      "detection_rate": 1.0
+    },
+    "Spare Parts Overcharging": {
+      "total": 1,
+      "detected": 1,
+      "cases": [
+        {
+          "case_id": "US_v_Boeing_2006",
+          "vendor": "Boeing Company",
+          "markup_pct": 450,
+          "predicted_tier": "RED",
+          "detected": true
+        }
+      ],
+      "detection_rate": 1.0
+    },
+    "Labor Rate Inflation": {
+      "total": 1,
+      "detected": 1,
+      "cases": [
+        {
+          "case_id": "US_v_DynCorp_2005",
+          "vendor": "DynCorp International",
+          "markup_pct": 75,
+          "predicted_tier": "YELLOW",
+          "detected": true
+        }
+      ],
+      "detection_rate": 1.0
+    },
+    "Quid Pro Quo + Price Inflation": {
+      "total": 1,
+      "detected": 1,
+      "cases": [
+        {
+          "case_id": "US_v_United_Technologies_2015",
+          "vendor": "United Technologies Corporation",
+          "markup_pct": 250,
+          "predicted_tier": "YELLOW",
+          "detected": true
+        }
+      ],
+      "detection_rate": 1.0
+    },
+    "False Testing Certification": {
+      "total": 1,
+      "detected": 0,
+      "cases": [
+        {
+          "case_id": "US_v_General_Dynamics_2011",
+          "vendor": "General Dynamics",
+          "markup_pct": 0,
+          "predicted_tier": "GREEN",
+          "detected": false
+        }
+      ],
+      "detection_rate": 0.0
+    },
+    "Defective Parts + Price Inflation": {
+      "total": 1,
+      "detected": 1,
+      "cases": [
+        {
+          "case_id": "US_v_Lockheed_Martin_2012",
+          "vendor": "Lockheed Martin",
+          "markup_pct": 320,
+          "predicted_tier": "RED",
+          "detected": true
+        }
+      ],
+      "detection_rate": 1.0
+    },
+    "Conflict of Interest": {
+      "total": 1,
+      "detected": 1,
+      "cases": [
+        {
+          "case_id": "US_v_Northrop_Grumman_2009",
+          "vendor": "Northrop Grumman",
+          "markup_pct": 180,
+          "predicted_tier": "YELLOW",
+          "detected": true
+        }
+      ],
+      "detection_rate": 1.0
+    },
+    "Time Fraud + Price Inflation": {
+      "total": 1,
+      "detected": 1,
+      "cases": [
+        {
+          "case_id": "US_v_CACI_2010",
+          "vendor": "CACI International",
+          "markup_pct": 240,
+          "predicted_tier": "YELLOW",
+          "detected": true
+        }
+      ],
+      "detection_rate": 1.0
+    },
+    "Defective Product": {
+      "total": 1,
+      "detected": 1,
+      "cases": [
+        {
+          "case_id": "US_v_Raytheon_2014",
+          "vendor": "Raytheon Company",
+          "markup_pct": 150,
+          "predicted_tier": "YELLOW",
+          "detected": true
+        }
+      ],
+      "detection_rate": 1.0
+    },
+    "Labor Mischarging": {
+      "total": 1,
+      "detected": 1,
+      "cases": [
+        {
+          "case_id": "US_v_BAE_Systems_2010",
+          "vendor": "BAE Systems",
+          "markup_pct": 190,
+          "predicted_tier": "YELLOW",
+          "detected": true
+        }
+      ],
+      "detection_rate": 1.0
+    }
+  },
+  "doj_case_details": [
+    {
+      "case_id": "US_v_Oracle_2011",
+      "vendor": "Oracle Corporation",
+      "fraud_type": "Price Inflation",
+      "markup_pct": 350,
+      "settlement": 199500000,
+      "contract_amount": 199500000,
+      "synthetic_amount": 121326232.88250001,
+      "comparable_count": 26084,
+      "predicted_tier": "RED",
+      "predicted_priority": 20,
+      "markup_ci_lower": 331.5,
+      "markup_ci_upper": 340.6,
+      "bayesian_posterior": 0.6222,
+      "bootstrap_percentile": 90.4,
+      "raw_pvalue": 0.0001,
+      "is_price_fraud": true,
+      "predicted_positive": true,
+      "ground_truth": "FRAUD",
+      "correct": true
+    },
+    {
+      "case_id": "US_v_Boeing_2006",
+      "vendor": "Boeing Company",
+      "fraud_type": "Spare Parts Overcharging",
+      "markup_pct": 450,
+      "settlement": 615000000,
+      "contract_amount": 615000000,
+      "synthetic_amount": 148287617.9675,
+      "comparable_count": 26084,
+      "predicted_tier": "RED",
+      "predicted_priority": 17,
+      "markup_ci_lower": 427.2,
+      "markup_ci_upper": 438.6,
+      "bayesian_posterior": 0.6222,
+      "bootstrap_percentile": 91.9,
+      "raw_pvalue": 0.0001,
+      "is_price_fraud": true,
+      "predicted_positive": true,
+      "ground_truth": "FRAUD",
+      "correct": true
+    },
+    {
+      "case_id": "US_v_DynCorp_2005",
+      "vendor": "DynCorp International",
+      "fraud_type": "Labor Rate Inflation",
+      "markup_pct": 75,
+      "settlement": 7000000,
+      "contract_amount": 7000000,
+      "synthetic_amount": 52717359.371249996,
+      "comparable_count": 893,
+      "predicted_tier": "YELLOW",
+      "predicted_priority": 125,
+      "markup_ci_lower": 66.3,
+      "markup_ci_upper": 84.1,
+      "bayesian_posterior": 0.5662,
+      "bootstrap_percentile": 71.8,
+      "raw_pvalue": 0.0001,
+      "is_price_fraud": true,
+      "predicted_positive": true,
+      "ground_truth": "FRAUD",
+      "correct": true
+    },
+    {
+      "case_id": "US_v_United_Technologies_2015",
+      "vendor": "United Technologies Corporation",
+      "fraud_type": "Quid Pro Quo + Price Inflation",
+      "markup_pct": 250,
+      "settlement": 75000000,
+      "contract_amount": 75000000,
+      "synthetic_amount": 94364847.7975,
+      "comparable_count": 25854,
+      "predicted_tier": "YELLOW",
+      "predicted_priority": 119,
+      "markup_ci_lower": 239.2,
+      "markup_ci_upper": 247.3,
+      "bayesian_posterior": 0.8842,
+      "bootstrap_percentile": 88.9,
+      "raw_pvalue": 0.0001,
+      "is_price_fraud": true,
+      "predicted_positive": true,
+      "ground_truth": "FRAUD",
+      "correct": true
+    },
+    {
+      "case_id": "US_v_General_Dynamics_2011",
+      "vendor": "General Dynamics",
+      "fraud_type": "False Testing Certification",
+      "markup_pct": 0,
+      "settlement": 4000000,
+      "contract_amount": 4000000,
+      "synthetic_amount": 4000000,
+      "comparable_count": 23442,
+      "predicted_tier": "GREEN",
+      "predicted_priority": 5000,
+      "markup_ci_lower": -84.0,
+      "markup_ci_upper": -83.8,
+      "bayesian_posterior": 0.0,
+      "bootstrap_percentile": 1.5,
+      "raw_pvalue": 1.0,
+      "is_price_fraud": false,
+      "predicted_positive": false,
+      "ground_truth": "FRAUD",
+      "correct": true
+    },
+    {
+      "case_id": "US_v_Lockheed_Martin_2012",
+      "vendor": "Lockheed Martin",
+      "fraud_type": "Defective Parts + Price Inflation",
+      "markup_pct": 320,
+      "settlement": 15800000,
+      "contract_amount": 15800000,
+      "synthetic_amount": 113237817.35700001,
+      "comparable_count": 26084,
+      "predicted_tier": "RED",
+      "predicted_priority": 20,
+      "markup_ci_lower": 303.0,
+      "markup_ci_upper": 311.4,
+      "bayesian_posterior": 0.6222,
+      "bootstrap_percentile": 89.7,
+      "raw_pvalue": 0.0001,
+      "is_price_fraud": true,
+      "predicted_positive": true,
+      "ground_truth": "FRAUD",
+      "correct": true
+    },
+    {
+      "case_id": "US_v_Northrop_Grumman_2009",
+      "vendor": "Northrop Grumman",
+      "fraud_type": "Conflict of Interest",
+      "markup_pct": 180,
+      "settlement": 12500000,
+      "contract_amount": 12500000,
+      "synthetic_amount": 75491878.23799999,
+      "comparable_count": 25854,
+      "predicted_tier": "YELLOW",
+      "predicted_priority": 127,
+      "markup_ci_lower": 171.6,
+      "markup_ci_upper": 177.8,
+      "bayesian_posterior": 0.6222,
+      "bootstrap_percentile": 85.5,
+      "raw_pvalue": 0.0001,
+      "is_price_fraud": true,
+      "predicted_positive": true,
+      "ground_truth": "FRAUD",
+      "correct": true
+    },
+    {
+      "case_id": "US_v_CACI_2010",
+      "vendor": "CACI International",
+      "fraud_type": "Time Fraud + Price Inflation",
+      "markup_pct": 240,
+      "settlement": 3500000,
+      "contract_amount": 3500000,
+      "synthetic_amount": 83450171.778,
+      "comparable_count": 423,
+      "predicted_tier": "YELLOW",
+      "predicted_priority": 120,
+      "markup_ci_lower": 212.6,
+      "markup_ci_upper": 262.2,
+      "bayesian_posterior": 0.5662,
+      "bootstrap_percentile": 93.6,
+      "raw_pvalue": 0.0001,
+      "is_price_fraud": true,
+      "predicted_positive": true,
+      "ground_truth": "FRAUD",
+      "correct": true
+    },
+    {
+      "case_id": "US_v_Raytheon_2014",
+      "vendor": "Raytheon Company",
+      "fraud_type": "Defective Product",
+      "markup_pct": 150,
+      "settlement": 9100000,
+      "contract_amount": 9100000,
+      "synthetic_amount": 67403462.7125,
+      "comparable_count": 25854,
+      "predicted_tier": "YELLOW",
+      "predicted_priority": 130,
+      "markup_ci_lower": 142.6,
+      "markup_ci_upper": 148.5,
+      "bayesian_posterior": 0.6222,
+      "bootstrap_percentile": 83.7,
+      "raw_pvalue": 0.0001,
+      "is_price_fraud": true,
+      "predicted_positive": true,
+      "ground_truth": "FRAUD",
+      "correct": true
+    },
+    {
+      "case_id": "US_v_BAE_Systems_2010",
+      "vendor": "BAE Systems",
+      "fraud_type": "Labor Mischarging",
+      "markup_pct": 190,
+      "settlement": 4000000,
+      "contract_amount": 4000000,
+      "synthetic_amount": 78188016.7465,
+      "comparable_count": 25854,
+      "predicted_tier": "YELLOW",
+      "predicted_priority": 127,
+      "markup_ci_lower": 181.3,
+      "markup_ci_upper": 188.1,
+      "bayesian_posterior": 0.6222,
+      "bootstrap_percentile": 86.2,
+      "raw_pvalue": 0.0001,
+      "is_price_fraud": true,
+      "predicted_positive": true,
+      "ground_truth": "FRAUD",
+      "correct": true
+    }
+  ],
+  "non_price_fraud_note": "1 case(s) involve non-price fraud (e.g., false certification) which is outside the scope of statistical price analysis. These are excluded from precision/recall calculations."
+}
