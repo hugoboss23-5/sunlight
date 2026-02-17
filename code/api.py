@@ -45,6 +45,7 @@ from institutional_pipeline import (
     verify_audit_chain,
 )
 from sunlight_logging import get_logger
+from detection_report import generate_detection_report, render_markdown
 from auth import (
     create_auth_dependency, require_api_key_dynamic,
     generate_api_key, rotate_api_key,
@@ -727,6 +728,34 @@ def triage_queue(
     conn.close()
 
     return PaginatedResponse(total=total, offset=offset, limit=limit, items=rows)
+
+
+@app.get("/reports/detection/{contract_id}", tags=["Reports"])
+def get_detection_report(
+    contract_id: str = Path(...),
+    run_id: Optional[str] = Query(None, description="Specific run to report on"),
+    format: Optional[str] = Query("json", description="'json' or 'markdown'"),
+    client: dict = Depends(require_api_key),
+):
+    """
+    Generate a client-facing detection report with explainable reasoning.
+
+    Returns structured JSON or human-readable markdown explaining WHY each
+    flag was raised. Designed for World Bank and institutional reviewers.
+    """
+    report = generate_detection_report(DB_PATH, contract_id, run_id=run_id)
+
+    if 'error' in report:
+        raise HTTPException(status_code=404, detail=report['error'])
+
+    if format == "markdown":
+        from fastapi.responses import PlainTextResponse
+        return PlainTextResponse(
+            content=render_markdown(report),
+            media_type="text/markdown",
+        )
+
+    return report
 
 
 # ---------------------------------------------------------------------------

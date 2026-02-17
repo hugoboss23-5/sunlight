@@ -221,6 +221,51 @@ class TestReports:
         resp = api_client.get("/reports/evidence/NONEXISTENT")
         assert resp.status_code == 404
 
+    def test_detection_report_json(self, api_client):
+        resp = api_client.get("/reports/detection/DOD-OUTLIER")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data['report_type'] == 'SUNLIGHT Detection Report'
+        assert data['contract']['contract_id'] == 'DOD-OUTLIER'
+        assert data['assessment']['risk_level'] in ('RED', 'YELLOW', 'GREEN', 'GRAY')
+        assert data['assessment']['risk_label'] != ''
+        # Explainable evidence
+        assert 'price_analysis' in data['evidence']
+        assert 'finding' in data['evidence']['price_analysis']
+        assert 'bayesian_analysis' in data['evidence']
+        assert 'finding' in data['evidence']['bayesian_analysis']
+        # Recommendations
+        assert 'action' in data['recommendations']
+        assert len(data['recommendations']['next_steps']) > 0
+        # Methodology transparency
+        assert 'methodology' in data
+        assert data['methodology']['transparency_note'] is not None
+        # Legal framework
+        assert len(data['legal_framework']) >= 0  # May be empty for GREEN
+
+    def test_detection_report_markdown(self, api_client):
+        resp = api_client.get("/reports/detection/DOD-OUTLIER", params={"format": "markdown"})
+        assert resp.status_code == 200
+        assert resp.headers['content-type'].startswith('text/markdown')
+        text = resp.text
+        assert '# SUNLIGHT Detection Report' in text
+        assert 'DOD-OUTLIER' in text
+        assert 'Evidence Summary' in text
+        assert 'Recommended Action' in text
+
+    def test_detection_report_not_found(self, api_client):
+        resp = api_client.get("/reports/detection/NONEXISTENT")
+        assert resp.status_code == 404
+
+    def test_detection_report_green_contract(self, api_client):
+        resp = api_client.get("/reports/detection/DOD-001")
+        assert resp.status_code == 200
+        data = resp.json()
+        # DOD-001 is $5M (median range) — should be GREEN or YELLOW, not RED
+        assert data['assessment']['risk_level'] in ('GREEN', 'YELLOW', 'GRAY')
+        assert 'context' in data
+        assert data['context']['total_comparables_in_agency'] > 0
+
     def test_triage_queue(self, api_client):
         # Run batch first
         api_client.post("/analyze/batch", json={"run_seed": 55, "n_bootstrap": 100})
