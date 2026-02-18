@@ -76,8 +76,18 @@ def create_job(db_path: str, source_filename: str, source_format: str,
     return job_id
 
 
+_ALLOWED_JOB_COLUMNS = frozenset({
+    'status', 'completed_at', 'total_records', 'inserted',
+    'duplicates', 'errors', 'scored', 'error_details',
+})
+
+
 def update_job(db_path: str, job_id: str, **kwargs):
-    """Update job fields."""
+    """Update job fields (only allowlisted columns)."""
+    # Validate column names against allowlist to prevent SQL injection
+    for key in kwargs:
+        if key not in _ALLOWED_JOB_COLUMNS:
+            raise ValueError(f"Invalid column name: {key}")
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
     sets = ", ".join(f"{k} = ?" for k in kwargs)

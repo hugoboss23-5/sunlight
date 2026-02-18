@@ -36,7 +36,8 @@ from datetime import datetime, timezone
 from typing import Optional, List
 from enum import Enum
 
-from fastapi import FastAPI, HTTPException, Query, Path, BackgroundTasks, Depends
+from fastapi import FastAPI, HTTPException, Query, Path, BackgroundTasks, Depends, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
@@ -98,12 +99,12 @@ class HealthResponse(BaseModel):
 
 
 class ContractIn(BaseModel):
-    contract_id: str = Field(..., description="Unique contract identifier")
-    award_amount: float = Field(..., gt=0, description="Award amount in USD")
-    vendor_name: str = Field(..., min_length=1)
-    agency_name: str = Field(..., min_length=1)
-    description: str = Field(default="", description="Contract description")
-    start_date: Optional[str] = None
+    contract_id: str = Field(..., min_length=1, max_length=100, description="Unique contract identifier")
+    award_amount: float = Field(..., gt=0, le=1e15, description="Award amount in USD")
+    vendor_name: str = Field(..., min_length=1, max_length=500)
+    agency_name: str = Field(..., min_length=1, max_length=500)
+    description: str = Field(default="", max_length=10000, description="Contract description")
+    start_date: Optional[str] = Field(default=None, max_length=30)
 
 
 class ContractOut(BaseModel):
@@ -138,11 +139,11 @@ class ScoreOut(BaseModel):
 
 
 class AnalyzeSingleRequest(BaseModel):
-    contract_id: str
-    award_amount: float = Field(..., gt=0)
-    vendor_name: str
-    agency_name: str
-    description: str = ""
+    contract_id: str = Field(..., min_length=1, max_length=100)
+    award_amount: float = Field(..., gt=0, le=1e15)
+    vendor_name: str = Field(..., min_length=1, max_length=500)
+    agency_name: str = Field(..., min_length=1, max_length=500)
+    description: str = Field(default="", max_length=10000)
     is_sole_source: bool = False
     has_political_donations: bool = False
 
@@ -250,6 +251,8 @@ def get_db():
 # FastAPI app
 # ---------------------------------------------------------------------------
 
+MAX_REQUEST_SIZE = 50 * 1024 * 1024  # 50 MB
+
 app = FastAPI(
     title="SUNLIGHT Fraud Detection API",
     description=(
@@ -261,6 +264,32 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
 )
+
+# CORS — configurable via environment
+CORS_ORIGINS = os.environ.get("SUNLIGHT_CORS_ORIGINS", "").split(",")
+CORS_ORIGINS = [o.strip() for o in CORS_ORIGINS if o.strip()]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=CORS_ORIGINS or ["*"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "DELETE"],
+    allow_headers=["X-API-Key", "Content-Type"],
+    max_age=3600,
+)
+
+
+@app.middleware("http")
+async def limit_request_size(request: Request, call_next):
+    """Reject requests exceeding MAX_REQUEST_SIZE."""
+    content_length = request.headers.get("content-length")
+    if content_length and int(content_length) > MAX_REQUEST_SIZE:
+        return JSONResponse(
+            status_code=413,
+            content={"detail": f"Request body too large. Maximum size: {MAX_REQUEST_SIZE // (1024*1024)} MB"},
+        )
+    return await call_next(request)
+
 
 # Initialize auth and ingestion schemas
 init_auth_schema(DB_PATH)
