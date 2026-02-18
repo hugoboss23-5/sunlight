@@ -18,6 +18,9 @@ data/raw/
 # SQLite databases (binary, not diffable)
 *.db
 
+# Generated demo artifacts
+data/sample_reports/
+
 # Backup archives
 *.tar.gz
 
