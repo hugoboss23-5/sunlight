@@ -28,9 +28,11 @@ def auth_client(populated_db, monkeypatch):
     """Create a test client with auth ENABLED and a pre-generated key."""
     import api
     import auth
+    import ingestion
     monkeypatch.setattr(api, 'DB_PATH', populated_db)
     monkeypatch.setattr(auth, 'AUTH_ENABLED', True)
     auth.init_auth_schema(populated_db)
+    ingestion.init_ingestion_schema(populated_db)
     # Generate a test key
     result = auth.generate_api_key(
         populated_db, "test_client",
@@ -545,3 +547,88 @@ class TestIngestion:
     def test_ingest_job_not_found(self, api_client):
         resp = api_client.get("/ingest/nonexistent_job")
         assert resp.status_code == 404
+
+
+class TestAdminDashboard:
+
+    def test_dashboard_health(self, auth_client):
+        client, key = auth_client
+        resp = client.get("/admin/dashboard/health", headers={"X-API-Key": key})
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data['status'] in ('healthy', 'degraded')
+        assert 'database' in data
+        assert data['database']['table_counts']['contracts'] > 0
+        assert 'pipeline' in data
+        assert data['pipeline']['audit_chain_valid'] is True
+
+    def test_dashboard_detections(self, auth_client):
+        client, key = auth_client
+        # Run a batch to generate scores
+        client.post("/analyze/batch",
+                    json={"run_seed": 77, "n_bootstrap": 100, "limit": 10},
+                    headers={"X-API-Key": key})
+        resp = client.get("/admin/dashboard/detections", headers={"X-API-Key": key})
+        assert resp.status_code == 200
+        data = resp.json()
+        assert 'summary' in data
+        assert data['summary']['total_scored'] > 0
+        assert 'tier_distribution' in data['summary']
+        assert 'run_history' in data
+        assert len(data['run_history']) >= 1
+        assert 'top_flagged_vendors' in data
+
+    def test_dashboard_api_usage(self, auth_client):
+        client, key = auth_client
+        # Make a few requests first
+        client.get("/health", headers={"X-API-Key": key})
+        client.get("/contracts", headers={"X-API-Key": key})
+        resp = client.get("/admin/dashboard/api-usage", headers={"X-API-Key": key})
+        assert resp.status_code == 200
+        data = resp.json()
+        assert 'volume' in data
+        assert data['volume']['active_keys'] >= 1
+        assert 'per_client' in data
+        assert len(data['per_client']) >= 1
+
+    def test_dashboard_flagged_queue(self, auth_client):
+        client, key = auth_client
+        # Run batch to generate flagged contracts
+        client.post("/analyze/batch",
+                    json={"run_seed": 88, "n_bootstrap": 100, "limit": 20},
+                    headers={"X-API-Key": key})
+        resp = client.get("/admin/dashboard/flagged", headers={"X-API-Key": key})
+        assert resp.status_code == 200
+        data = resp.json()
+        assert 'total' in data
+        assert 'summary' in data
+        assert 'items' in data
+        # All items should be RED or YELLOW
+        for item in data['items']:
+            assert item['fraud_tier'] in ('RED', 'YELLOW')
+
+    def test_dashboard_flagged_filter_by_tier(self, auth_client):
+        client, key = auth_client
+        client.post("/analyze/batch",
+                    json={"run_seed": 99, "n_bootstrap": 100, "limit": 20},
+                    headers={"X-API-Key": key})
+        resp = client.get("/admin/dashboard/flagged?tier=RED", headers={"X-API-Key": key})
+        assert resp.status_code == 200
+        data = resp.json()
+        for item in data['items']:
+            assert item['fraud_tier'] == 'RED'
+
+    def test_dashboard_requires_admin(self, auth_client):
+        client, admin_key = auth_client
+        # Generate a non-admin key
+        import auth
+        gen = client.post("/admin/keys", json={
+            "client_name": "reader",
+            "scopes": "read",
+        }, headers={"X-API-Key": admin_key})
+        reader_key = gen.json()['api_key']
+        # All dashboard endpoints should reject non-admin
+        for endpoint in ["/admin/dashboard/health", "/admin/dashboard/detections",
+                         "/admin/dashboard/api-usage", "/admin/dashboard/flagged"]:
+            resp = client.get(endpoint, headers={"X-API-Key": reader_key})
+            assert resp.status_code == 403

@@ -4,6 +4,7 @@
 include = [
     "code/api.py",
     "code/auth.py",
+    "code/dashboard.py",
     "code/detection_report.py",
     "code/doj_validation.py",
     "code/institutional_pipeline.py",

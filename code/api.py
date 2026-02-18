@@ -21,6 +21,10 @@ Endpoints:
     GET  /audit                      — Audit trail
     POST /ingest                     — Upload document for async ingestion
     GET  /ingest/{job_id}            — Check ingestion job status
+    GET  /admin/dashboard/health     — System health overview
+    GET  /admin/dashboard/detections — Detection stats over time
+    GET  /admin/dashboard/api-usage  — API usage per client
+    GET  /admin/dashboard/flagged    — Flagged contracts queue
 """
 
 import os
@@ -55,6 +59,9 @@ from auth import (
 )
 from ingestion import (
     init_ingestion_schema, create_job, get_job, process_ingestion,
+)
+from dashboard import (
+    get_system_health, get_detection_stats, get_api_usage, get_flagged_queue,
 )
 
 logger = get_logger("api")
@@ -1024,6 +1031,63 @@ def get_ingestion_status(job_id: str = Path(...), client: dict = Depends(require
     if not job:
         raise HTTPException(status_code=404, detail=f"Ingestion job {job_id} not found")
     return IngestionStatusResponse(**job)
+
+
+# ---------------------------------------------------------------------------
+# Admin — Dashboard
+# ---------------------------------------------------------------------------
+
+@app.get("/admin/dashboard/health", tags=["Admin Dashboard"])
+def admin_dashboard_health(client: dict = Depends(require_api_key)):
+    """
+    System health overview: database stats, pipeline status, audit chain integrity.
+    Requires admin scope.
+    """
+    _require_admin(client)
+    return get_system_health(DB_PATH)
+
+
+@app.get("/admin/dashboard/detections", tags=["Admin Dashboard"])
+def admin_dashboard_detections(
+    days: int = Query(30, ge=1, le=365, description="Lookback period in days"),
+    client: dict = Depends(require_api_key),
+):
+    """
+    Detection statistics: tier distribution, run history, top flagged vendors/agencies.
+    Requires admin scope.
+    """
+    _require_admin(client)
+    return get_detection_stats(DB_PATH, days=days)
+
+
+@app.get("/admin/dashboard/api-usage", tags=["Admin Dashboard"])
+def admin_dashboard_api_usage(
+    days: int = Query(30, ge=1, le=365, description="Lookback period in days"),
+    client: dict = Depends(require_api_key),
+):
+    """
+    API usage per client: request volume, top endpoints, active keys.
+    Requires admin scope.
+    """
+    _require_admin(client)
+    return get_api_usage(DB_PATH, days=days)
+
+
+@app.get("/admin/dashboard/flagged", tags=["Admin Dashboard"])
+def admin_dashboard_flagged(
+    tier: Optional[str] = Query(None, description="Filter by tier: RED or YELLOW"),
+    run_id: Optional[str] = Query(None, description="Filter by run ID"),
+    offset: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=500),
+    client: dict = Depends(require_api_key),
+):
+    """
+    Flagged contracts queue with investigation priority.
+    RED contracts first, then YELLOW, ordered by triage priority.
+    Requires admin scope.
+    """
+    _require_admin(client)
+    return get_flagged_queue(DB_PATH, tier=tier, run_id=run_id, offset=offset, limit=limit)
 
 
 # ---------------------------------------------------------------------------
