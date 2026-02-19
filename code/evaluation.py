@@ -57,8 +57,8 @@ logger = get_logger("evaluation")
 
 ANALYST_MINUTES_PER_FLAG = 45  # Estimated analyst minutes per flagged contract review
 CI_GATE_PRECISION_MIN = 0.05   # Block CI if precision falls below 5%
-CI_GATE_RECALL_MIN = 0.85      # Block CI if recall falls below 85%
-CI_GATE_FLAGS_PER_1K_MAX = 500  # Block CI if flags/1k exceeds cap
+CI_GATE_RECALL_MIN = 0.90      # Block CI if recall falls below 90%
+CI_GATE_FLAGS_PER_1K_MAX = 200  # Block CI if flags/1k exceeds cap
 
 RULEPACK_VERSION = "2.0.0"
 
@@ -99,6 +99,39 @@ def compute_pr_curve(y_true: List[bool], scores: List[float],
         'recall': [round(r, 4) for r in recalls],
         'pr_auc': round(float(pr_auc), 4),
     }
+
+
+def compute_threshold_sweep(y_true: List[bool], scores: List[float],
+                            step: int = 5) -> List[Dict]:
+    """
+    Sweep confidence thresholds from 0-100 in given step size.
+    At each threshold, compute precision, recall, F1, flags/1K.
+    """
+    results = []
+    n = len(y_true)
+    for thresh in range(0, 101, step):
+        preds = [s >= thresh for s in scores]
+        tp = sum(1 for yt, yp in zip(y_true, preds) if yt and yp)
+        fp = sum(1 for yt, yp in zip(y_true, preds) if not yt and yp)
+        fn = sum(1 for yt, yp in zip(y_true, preds) if yt and not yp)
+        tn = sum(1 for yt, yp in zip(y_true, preds) if not yt and not yp)
+
+        prec = tp / (tp + fp) if (tp + fp) > 0 else 1.0
+        rec = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+        f1 = 2 * prec * rec / (prec + rec) if (prec + rec) > 0 else 0.0
+        flagged = sum(preds)
+        flags_1k = (flagged / n * 1000) if n > 0 else 0
+
+        results.append({
+            'threshold': thresh,
+            'precision': round(prec, 4),
+            'recall': round(rec, 4),
+            'f1': round(f1, 4),
+            'tp': tp, 'fp': fp, 'fn': fn, 'tn': tn,
+            'flagged': flagged,
+            'flags_per_1k': round(flags_1k, 1),
+        })
+    return results
 
 
 def bootstrap_metric_ci(y_true: List[bool], y_pred: List[bool],
@@ -244,6 +277,9 @@ def run_full_evaluation(db_path: str, cases_path: str,
     # --- PR curve ---
     pr_curve = compute_pr_curve(y_true, scores)
 
+    # --- Threshold sweep ---
+    threshold_sweep = compute_threshold_sweep(y_true, scores, step=5)
+
     # --- Review workload ---
     total_scored = len(evaluable)
     total_flagged = sum(y_pred)
@@ -319,6 +355,7 @@ def run_full_evaluation(db_path: str, cases_path: str,
             'true_negative': tn,
         },
         'pr_curve': pr_curve,
+        'threshold_sweep': threshold_sweep,
         'review_workload': {
             'total_contracts_scored': total_scored,
             'total_flagged': total_flagged,
@@ -443,7 +480,24 @@ def write_evaluation_report_md(report: Dict, path: str):
         "",
         "---",
         "",
-        "## 7. Interpretation & Limitations",
+        "## 7. Precision-Recall Tradeoff by Confidence Threshold",
+        "",
+        "| Threshold | Precision | Recall | F1 | Flags/1K | Flagged |",
+        "|---|---|---|---|---|---|",
+    ]
+
+    # Add threshold sweep rows
+    for row in report.get('threshold_sweep', []):
+        lines.append(
+            f"| {row['threshold']} | {row['precision']:.1%} | {row['recall']:.1%} | "
+            f"{row['f1']:.1%} | {row['flags_per_1k']:.1f} | {row['flagged']} |"
+        )
+
+    lines += [
+        "",
+        "---",
+        "",
+        "## 8. Interpretation & Limitations",
         "",
         "### What these metrics mean",
         "",
@@ -507,8 +561,16 @@ if __name__ == "__main__":
 
     json_path = os.path.join(out_dir, 'evaluation_report.json')
     md_path = os.path.join(out_dir, 'evaluation_report.md')
+    pr_curve_path = os.path.join(out_dir, 'precision_recall_curve.json')
     write_evaluation_report_json(report, json_path)
     write_evaluation_report_md(report, md_path)
+
+    # Write threshold sweep / PR curve data
+    with open(pr_curve_path, 'w') as f:
+        json.dump({
+            'pr_curve': report['pr_curve'],
+            'threshold_sweep': report['threshold_sweep'],
+        }, f, indent=2)
 
     m = report['classification_metrics']
     gate = report['ci_gate']

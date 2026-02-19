@@ -231,11 +231,35 @@ class TestTierAssignment:
             'insufficient_comparables': False,
             'markup_ci_lower': 100,
             'bayesian_posterior': 0.55,
-            'percentile_ci_lower': 85,
+            'percentile_ci_lower': 86,
             'comparable_count': 10,
         }
         tier, priority = assign_tier(score, 0.05, False)
         assert tier == 'YELLOW'
+
+    def test_green_when_ci_below_gate_despite_other_signals(self):
+        """ci<=55 gate: even with high posterior/percentile, low ci blocks YELLOW."""
+        score = {
+            'insufficient_comparables': False,
+            'markup_ci_lower': 30,
+            'bayesian_posterior': 0.55,
+            'percentile_ci_lower': 92,
+            'comparable_count': 10,
+        }
+        tier, priority = assign_tier(score, 0.05, False)
+        assert tier == 'GREEN'
+
+    def test_green_for_percentile_80(self):
+        """pci=80 is below the pci>90 threshold, should not contribute a signal."""
+        score = {
+            'insufficient_comparables': False,
+            'markup_ci_lower': 0,
+            'bayesian_posterior': 0.10,
+            'percentile_ci_lower': 80,
+            'comparable_count': 10,
+        }
+        tier, priority = assign_tier(score, 0.5, False)
+        assert tier == 'GREEN'
 
     def test_red_priority_lower_than_yellow(self):
         """RED cases should have lower (better) triage priority."""
@@ -250,7 +274,7 @@ class TestTierAssignment:
             'insufficient_comparables': False,
             'markup_ci_lower': 100,
             'bayesian_posterior': 0.55,
-            'percentile_ci_lower': 85,
+            'percentile_ci_lower': 86,
             'comparable_count': 10,
         }
         _, red_priority = assign_tier(red_score, 0.001, True)

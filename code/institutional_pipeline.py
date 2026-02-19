@@ -118,10 +118,8 @@ def assign_tier(score, fdr_adj, survives_fdr):
     elif ci > 75: f.append(65)
     if pci > 95: f.append(90)
     elif pci > 90: f.append(80)
-    elif pci > 75: f.append(70)
     if post > 0.80: f.append(90)
     elif post > 0.50: f.append(75)
-    elif post > 0.20: f.append(60)
     if not f:
         logger.debug("No evidence signals", extra={"contract_id": score.get('contract_id'), "decision": "GREEN"})
         return 'GREEN', 5000
@@ -130,7 +128,7 @@ def assign_tier(score, fdr_adj, survives_fdr):
         tier = 'RED'
     elif avg >= 90 and survives_fdr:
         tier = 'RED'
-    elif avg >= 70:
+    elif avg >= 70 and ci > 55:
         tier = 'YELLOW'
     elif score['comparable_count'] < 5:
         tier = 'GRAY'
