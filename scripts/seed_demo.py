@@ -4,7 +4,7 @@ SUNLIGHT Demo Environment Seed Script
 =======================================
 
 Creates a self-contained demo database with:
-- 100 anonymized contracts across 5 agencies (mix of clean and flagged)
+- 100 anonymized contracts across 5 agencies (95 clean + 5 fraud-pattern)
 - Political donation records for suspect vendors
 - Pre-run detection analysis with full statistical evidence
 - Sample detection reports (JSON + Markdown) for flagged contracts
@@ -125,7 +125,7 @@ AGENCY_MEDIANS = {
 
 
 def generate_demo_contracts(rng):
-    """Generate 100 contracts with a realistic mix of clean and flagged."""
+    """Generate 100 contracts: 95 clean + 5 fraud-pattern."""
     contracts = []
     contract_num = 0
 
@@ -133,7 +133,7 @@ def generate_demo_contracts(rng):
         median = AGENCY_MEDIANS[agency]
         prefix = agency.split()[-1][:3].upper()
         descs = DESCRIPTIONS[agency]
-        n_normal = 16  # 80 normal contracts total
+        n_normal = 19  # 95 clean contracts total (19 per agency x 5 agencies)
 
         # Normal contracts: 0.5x to 1.5x median (Gaussian around median)
         for i in range(n_normal):
@@ -154,33 +154,35 @@ def generate_demo_contracts(rng):
                 'is_flagged': False,
             })
 
-        # Flagged contracts: inflated amounts (2x-6x median)
-        flag_profiles = [
-            # (multiplier, vendor, flag_reason)
-            (2.5, None, 'elevated_markup'),    # YELLOW candidate
-            (3.5, None, 'high_markup'),         # YELLOW/RED candidate
-            (5.0, None, 'extreme_markup'),      # RED candidate
-            (4.0, None, 'high_with_donations'), # RED with political donations
+        # 1 fraud-pattern contract per agency (5 total)
+        # Rotate through different fraud patterns
+        fraud_patterns = [
+            (5.0, 'extreme_markup'),      # RED - extreme overpricing
+            (3.5, 'high_markup'),          # YELLOW/RED - significant markup
+            (4.0, 'high_with_donations'),  # RED - markup + political donations
+            (2.5, 'elevated_markup'),      # YELLOW - elevated pricing
+            (4.5, 'extreme_markup'),       # RED - extreme overpricing
         ]
+        agency_idx = AGENCIES.index(agency)
+        mult, reason = fraud_patterns[agency_idx]
 
-        for mult, vendor_override, reason in flag_profiles:
-            contract_num += 1
-            amount = int(median * mult)
-            vendor = vendor_override or rng.choice(VENDORS[:8])  # Repeat vendors for realism
-            desc = rng.choice(descs)
-            days_ago = rng.randint(30, 365)
-            start_date = (datetime.now() - timedelta(days=days_ago)).strftime('%Y-%m-%d')
+        contract_num += 1
+        amount = int(median * mult)
+        vendor = rng.choice(VENDORS[:8])
+        desc = rng.choice(descs)
+        days_ago = rng.randint(30, 365)
+        start_date = (datetime.now() - timedelta(days=days_ago)).strftime('%Y-%m-%d')
 
-            contracts.append({
-                'contract_id': f'DEMO-{prefix}-{contract_num:03d}',
-                'award_amount': amount,
-                'vendor_name': vendor,
-                'agency_name': agency,
-                'description': desc,
-                'start_date': start_date,
-                'is_flagged': True,
-                'flag_reason': reason,
-            })
+        contracts.append({
+            'contract_id': f'DEMO-{prefix}-{contract_num:03d}',
+            'award_amount': amount,
+            'vendor_name': vendor,
+            'agency_name': agency,
+            'description': desc,
+            'start_date': start_date,
+            'is_flagged': True,
+            'flag_reason': reason,
+        })
 
     return contracts
 
@@ -505,7 +507,7 @@ def main():
 
     # Step 1: Generate contracts
     rng = random.Random(args.seed)
-    print('[1/4] Generating 100 anonymized contracts...')
+    print('[1/4] Generating 100 contracts (95 clean + 5 fraud-pattern)...')
     contracts = generate_demo_contracts(rng)
     print(f'      {len(contracts)} contracts across {len(AGENCIES)} agencies')
 
