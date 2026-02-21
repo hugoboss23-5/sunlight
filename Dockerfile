@@ -16,6 +16,7 @@ COPY code/ ./code/
 COPY data/ ./data/
 COPY prosecuted_cases.json ./
 COPY migrations/ ./migrations/
+COPY worker.py ./
 
 # Ensure internal imports resolve (api.py uses sys.path.insert for siblings)
 ENV PYTHONPATH=/app/code \
