@@ -1,0 +1,14 @@
+{
+  "tenant_id": "demo-tenant",
+  "steps": {
+    "tenant_created": true,
+    "webhook_configured": true,
+    "data_ingested": true,
+    "first_scan_complete": true,
+    "risk_inbox_available": true,
+    "dispositions_set": true,
+    "go_live": true
+  },
+  "complete": true,
+  "next_step": null
+}

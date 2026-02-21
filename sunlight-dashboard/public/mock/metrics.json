@@ -1,0 +1,9 @@
+{
+  "recall_est": 1.0,
+  "red_precision_est": 0.257,
+  "flags_per_1k": 167.5,
+  "f1_score": 0.409,
+  "total_scored": 100,
+  "total_flagged": 5,
+  "model_version": "sunlight-v2.0"
+}

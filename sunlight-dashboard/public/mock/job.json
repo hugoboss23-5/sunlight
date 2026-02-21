@@ -1,0 +1,17 @@
+{
+  "job_id": "job_20241115_001",
+  "status": "COMPLETED",
+  "progress_pct": 100,
+  "progress_msg": "Scoring complete",
+  "created_at": "2024-11-15T10:00:00Z",
+  "started_at": "2024-11-15T10:00:05Z",
+  "completed_at": "2024-11-15T10:02:30Z",
+  "result": {
+    "total_scored": 100,
+    "red_count": 1,
+    "yellow_count": 4,
+    "green_count": 95,
+    "avg_confidence": 42.3,
+    "processing_time_seconds": 145
+  }
+}
