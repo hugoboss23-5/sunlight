@@ -12,17 +12,22 @@ build/
 venv/
 env/
 
-# Raw data (75GB+ of FPDS contract CSVs/zips)
-data/raw/
-
-# SQLite databases (binary, not diffable)
+# Data — large binary / sensitive
+data/
 *.db
 
-# Generated demo artifacts
-data/sample_reports/
+# Sensitive ground-truth (contains case details)
+prosecuted_cases.json
 
 # Backup archives
 *.tar.gz
+*.zip
+
+# Terraform state (contains secrets)
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
 
 # Temp/editor files
 *.swp
@@ -39,3 +44,6 @@ data/sample_reports/
 # Environment variables (may contain API keys)
 .env
 .env.local
+
+# OS
+Thumbs.db
