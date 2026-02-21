@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -uo pipefail
 
 # =============================================================================
 # SUNLIGHT Pre-Launch Master Checklist
@@ -20,9 +20,9 @@ PASS=0
 FAIL=0
 WARN=0
 
-check_pass() { echo -e "  ${GREEN}[PASS]${NC} $1"; ((PASS++)); }
-check_fail() { echo -e "  ${RED}[FAIL]${NC} $1"; ((FAIL++)); }
-check_warn() { echo -e "  ${YELLOW}[WARN]${NC} $1"; ((WARN++)); }
+check_pass() { echo -e "  ${GREEN}[PASS]${NC} $1"; PASS=$((PASS + 1)); }
+check_fail() { echo -e "  ${RED}[FAIL]${NC} $1"; FAIL=$((FAIL + 1)); }
+check_warn() { echo -e "  ${YELLOW}[WARN]${NC} $1"; WARN=$((WARN + 1)); }
 
 echo ""
 echo "============================================================"
