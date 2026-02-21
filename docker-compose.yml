@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   postgres:
     image: postgres:16-alpine
@@ -54,5 +52,52 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
     restart: unless-stopped
 
+  webhook-worker:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SUNLIGHT_DB_PATH: /app/data/sunlight.db
+      SUNLIGHT_LOG_LEVEL: ${SUNLIGHT_LOG_LEVEL:-INFO}
+      WEBHOOK_WORKER_CONCURRENCY: ${WEBHOOK_WORKER_CONCURRENCY:-4}
+      WEBHOOK_RETRY_MAX: ${WEBHOOK_RETRY_MAX:-3}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-sunlight}
+      POSTGRES_USER: ${POSTGRES_USER:-sunlight}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    command: python -m code.jobs --worker
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./infra/prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=30d"
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:10.4.0
+    depends_on:
+      - prometheus
+    volumes:
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-changeme}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    restart: unless-stopped
+
 volumes:
   pgdata:
+  prometheus_data:
+  grafana_data:

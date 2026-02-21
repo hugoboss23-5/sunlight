@@ -65,6 +65,20 @@ groups:
           summary: "Webhook delivery failure rate elevated"
           runbook_url: "https://docs.sunlight.dev/runbook#webhook-failures"
 
+  - name: sunlight_slo
+    rules:
+      - alert: SunlightAvailabilitySLOBreach
+        expr: |
+          1 - (sum(rate(http_requests_total{status=~"5.."}[30m]))
+          / sum(rate(http_requests_total[30m]))) < 0.995
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "SUNLIGHT availability below 99.5% SLO"
+          description: "30m rolling availability is {{ $value | humanizePercentage }}."
+          runbook_url: "https://docs.sunlight.dev/runbook#slo-breach"
+
   - name: sunlight_auth
     rules:
       - alert: SunlightAuthFailureSpike
