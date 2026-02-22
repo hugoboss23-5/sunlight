@@ -1,0 +1,186 @@
+{
+  "app": {
+    "name": "SUNLIGHT",
+    "tagline": "Procurement Integrity Intelligence"
+  },
+
+  "legal": {
+    "risk_indicator": "Risk indicator, not allegation.",
+    "risk_indicator_full": "This output identifies statistical anomalies in procurement data. It is a risk indicator, not an allegation of fraud. Human investigation is required to determine intent.",
+    "disclaimer_footer": "SUNLIGHT identifies statistical anomalies. All flags require human investigation. Risk indicator, not allegation.",
+    "data_notice": "Data processed under institutional license. All access logged for audit trail compliance.",
+    "calibration_notice": "Detection calibrated to {{standard}} evidentiary standard with {{prior}} prior fraud rate."
+  },
+
+  "nav": {
+    "risk_inbox": "Risk Inbox",
+    "case_packet": "Case Packet",
+    "portfolio": "Portfolio",
+    "admin": "Administration",
+    "onboarding": "Onboarding",
+    "settings": "Settings",
+    "language": "Language",
+    "logout": "Log Out"
+  },
+
+  "risk_inbox": {
+    "title": "Risk Inbox",
+    "subtitle": "Flagged contracts requiring analyst review",
+    "filter_all": "All",
+    "filter_red": "RED",
+    "filter_yellow": "YELLOW",
+    "filter_green": "GREEN",
+    "sort_by": "Sort by",
+    "sort_risk": "Risk Score",
+    "sort_value": "Contract Value",
+    "sort_date": "Date",
+    "sort_agency": "Agency",
+    "no_results": "No contracts match the current filters.",
+    "showing": "Showing {{count}} of {{total}} contracts",
+    "triage_accept": "Accept for Investigation",
+    "triage_dismiss": "Dismiss",
+    "triage_escalate": "Escalate",
+    "triage_defer": "Defer",
+    "keyboard_hint": "J/K to navigate, 1-4 to triage, Enter to open"
+  },
+
+  "case_packet": {
+    "title": "Case Packet",
+    "executive_summary": "Executive Summary",
+    "risk_tier": "Risk Tier",
+    "posterior_probability": "Posterior Probability",
+    "typologies_triggered": "Typologies Triggered",
+    "evidence_chain": "Evidence Chain",
+    "peer_comparison": "Peer Comparison",
+    "linkage_analysis": "Linkage Analysis",
+    "audit_trail": "Audit Trail",
+    "investigation_steps": "Recommended Investigation Steps",
+    "calibration_context": "Calibration Context",
+    "export_pdf": "Export PDF",
+    "export_json": "Export JSON"
+  },
+
+  "portfolio": {
+    "title": "Portfolio Overview",
+    "total_contracts": "Total Contracts",
+    "flagged_contracts": "Flagged Contracts",
+    "red_flags": "RED Flags",
+    "yellow_flags": "YELLOW Flags",
+    "flags_per_1k": "Flags per 1,000",
+    "value_at_risk": "Value at Risk",
+    "by_agency": "By Agency",
+    "by_sector": "By Sector",
+    "by_typology": "By Typology",
+    "trend": "Trend"
+  },
+
+  "admin": {
+    "title": "Administration",
+    "jurisdiction_panel": "Jurisdiction & Standards",
+    "jurisdiction_description": "Configure detection calibration and regional settings for this tenant.",
+    "institution_profile": "Institution Profile",
+    "continent": "Continent",
+    "country": "Country",
+    "preferred_currency": "Preferred Currency",
+    "timezone": "Timezone",
+    "detection_settings": "Detection Settings",
+    "prior_fraud_rate": "Prior Fraud Rate",
+    "red_threshold": "RED Threshold",
+    "yellow_threshold": "YELLOW Threshold",
+    "evidentiary_standard": "Evidentiary Standard",
+    "fdr_alpha": "FDR Alpha",
+    "max_flags_per_1k": "Max Flags per 1,000",
+    "preview_title": "Configuration Preview",
+    "preview_description": "This selection applies the following detection parameters:",
+    "save_profile": "Save Profile",
+    "saving": "Saving...",
+    "saved_success": "Profile saved successfully.",
+    "saved_error": "Error saving profile.",
+    "reset_to_preset": "Reset to Preset",
+    "custom_overrides": "Custom Overrides",
+    "users": "Users",
+    "api_keys": "API Keys",
+    "audit_log": "Audit Log",
+    "system_health": "System Health"
+  },
+
+  "onboarding": {
+    "title": "Welcome to SUNLIGHT",
+    "step1_title": "Select Your Institution",
+    "step1_description": "Choose a preset that matches your institutional context.",
+    "step2_title": "Configure Region",
+    "step2_description": "Set your country and currency for localized formatting.",
+    "step3_title": "Review Detection Parameters",
+    "step3_description": "Verify the statistical calibration for your deployment.",
+    "step4_title": "Ready to Begin",
+    "step4_description": "Your SUNLIGHT instance is configured and ready.",
+    "next": "Next",
+    "back": "Back",
+    "finish": "Start Using SUNLIGHT"
+  },
+
+  "typology": {
+    "price_anomaly": "Price Anomaly",
+    "vendor_concentration": "Vendor Concentration",
+    "timing_anomaly": "Timing Anomaly",
+    "split_contract": "Split Contract",
+    "geographic_clustering": "Geographic Clustering",
+    "agency_risk": "Agency-Level Risk"
+  },
+
+  "tier": {
+    "red": "RED",
+    "yellow": "YELLOW",
+    "green": "GREEN",
+    "red_description": "High-confidence risk indicator. Multiple typologies or strong posterior.",
+    "yellow_description": "Moderate risk indicator. Warrants further review.",
+    "green_description": "No significant statistical anomalies detected."
+  },
+
+  "evidence_standard": {
+    "beyond_reasonable_doubt": "Beyond Reasonable Doubt",
+    "clear_and_convincing": "Clear and Convincing",
+    "balance_of_probabilities": "Balance of Probabilities",
+    "reasonable_suspicion": "Reasonable Suspicion"
+  },
+
+  "procurement": {
+    "contract": "Contract",
+    "contracts": "Contracts",
+    "vendor": "Vendor",
+    "agency": "Agency",
+    "contract_value": "Contract Value",
+    "award_date": "Award Date",
+    "sector": "Sector",
+    "country": "Country",
+    "description": "Description"
+  },
+
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred.",
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "refresh": "Refresh",
+    "back": "Back",
+    "next": "Next",
+    "yes": "Yes",
+    "no": "No",
+    "of": "of",
+    "total": "Total"
+  },
+
+  "formats": {
+    "date_relative_today": "Today",
+    "date_relative_yesterday": "Yesterday",
+    "date_relative_days_ago": "{{count}} days ago"
+  }
+}

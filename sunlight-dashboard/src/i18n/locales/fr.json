@@ -1,0 +1,186 @@
+{
+  "app": {
+    "name": "SUNLIGHT",
+    "tagline": "Intelligence en intégrité des marchés publics"
+  },
+
+  "legal": {
+    "risk_indicator": "Indicateur de risque, pas une allégation.",
+    "risk_indicator_full": "Ce résultat identifie des anomalies statistiques dans les données de passation de marchés. Il s'agit d'un indicateur de risque, et non d'une allégation de fraude. Une enquête humaine est nécessaire pour déterminer l'intention.",
+    "disclaimer_footer": "SUNLIGHT identifie des anomalies statistiques. Tous les signalements nécessitent une enquête humaine. Indicateur de risque, pas une allégation.",
+    "data_notice": "Données traitées sous licence institutionnelle. Tous les accès sont enregistrés pour conformité à la piste d'audit.",
+    "calibration_notice": "Détection calibrée selon la norme probatoire «\u00a0{{standard}}\u00a0» avec un taux de fraude a priori de {{prior}}."
+  },
+
+  "nav": {
+    "risk_inbox": "Boîte de risques",
+    "case_packet": "Dossier d'enquête",
+    "portfolio": "Portefeuille",
+    "admin": "Administration",
+    "onboarding": "Intégration",
+    "settings": "Paramètres",
+    "language": "Langue",
+    "logout": "Déconnexion"
+  },
+
+  "risk_inbox": {
+    "title": "Boîte de risques",
+    "subtitle": "Contrats signalés nécessitant un examen par un analyste",
+    "filter_all": "Tous",
+    "filter_red": "ROUGE",
+    "filter_yellow": "JAUNE",
+    "filter_green": "VERT",
+    "sort_by": "Trier par",
+    "sort_risk": "Score de risque",
+    "sort_value": "Valeur du contrat",
+    "sort_date": "Date",
+    "sort_agency": "Agence",
+    "no_results": "Aucun contrat ne correspond aux filtres actuels.",
+    "showing": "Affichage de {{count}} sur {{total}} contrats",
+    "triage_accept": "Accepter pour enquête",
+    "triage_dismiss": "Rejeter",
+    "triage_escalate": "Escalader",
+    "triage_defer": "Différer",
+    "keyboard_hint": "J/K pour naviguer, 1-4 pour trier, Entrée pour ouvrir"
+  },
+
+  "case_packet": {
+    "title": "Dossier d'enquête",
+    "executive_summary": "Résumé exécutif",
+    "risk_tier": "Niveau de risque",
+    "posterior_probability": "Probabilité postérieure",
+    "typologies_triggered": "Typologies déclenchées",
+    "evidence_chain": "Chaîne de preuves",
+    "peer_comparison": "Comparaison avec les pairs",
+    "linkage_analysis": "Analyse de liens",
+    "audit_trail": "Piste d'audit",
+    "investigation_steps": "Étapes d'enquête recommandées",
+    "calibration_context": "Contexte de calibration",
+    "export_pdf": "Exporter en PDF",
+    "export_json": "Exporter en JSON"
+  },
+
+  "portfolio": {
+    "title": "Vue d'ensemble du portefeuille",
+    "total_contracts": "Total des contrats",
+    "flagged_contracts": "Contrats signalés",
+    "red_flags": "Signalements ROUGES",
+    "yellow_flags": "Signalements JAUNES",
+    "flags_per_1k": "Signalements pour 1\u00a0000",
+    "value_at_risk": "Valeur à risque",
+    "by_agency": "Par agence",
+    "by_sector": "Par secteur",
+    "by_typology": "Par typologie",
+    "trend": "Tendance"
+  },
+
+  "admin": {
+    "title": "Administration",
+    "jurisdiction_panel": "Juridiction et normes",
+    "jurisdiction_description": "Configurer le calibrage de détection et les paramètres régionaux pour ce locataire.",
+    "institution_profile": "Profil institutionnel",
+    "continent": "Continent",
+    "country": "Pays",
+    "preferred_currency": "Devise préférée",
+    "timezone": "Fuseau horaire",
+    "detection_settings": "Paramètres de détection",
+    "prior_fraud_rate": "Taux de fraude a priori",
+    "red_threshold": "Seuil ROUGE",
+    "yellow_threshold": "Seuil JAUNE",
+    "evidentiary_standard": "Norme probatoire",
+    "fdr_alpha": "Alpha FDR",
+    "max_flags_per_1k": "Signalements max pour 1\u00a0000",
+    "preview_title": "Aperçu de la configuration",
+    "preview_description": "Cette sélection applique les paramètres de détection suivants\u00a0:",
+    "save_profile": "Enregistrer le profil",
+    "saving": "Enregistrement...",
+    "saved_success": "Profil enregistré avec succès.",
+    "saved_error": "Erreur lors de l'enregistrement du profil.",
+    "reset_to_preset": "Réinitialiser au profil prédéfini",
+    "custom_overrides": "Personnalisations",
+    "users": "Utilisateurs",
+    "api_keys": "Clés API",
+    "audit_log": "Journal d'audit",
+    "system_health": "Santé du système"
+  },
+
+  "onboarding": {
+    "title": "Bienvenue sur SUNLIGHT",
+    "step1_title": "Sélectionnez votre institution",
+    "step1_description": "Choisissez un profil prédéfini correspondant à votre contexte institutionnel.",
+    "step2_title": "Configurer la région",
+    "step2_description": "Définissez votre pays et votre devise pour un formatage localisé.",
+    "step3_title": "Vérifier les paramètres de détection",
+    "step3_description": "Vérifiez le calibrage statistique pour votre déploiement.",
+    "step4_title": "Prêt à commencer",
+    "step4_description": "Votre instance SUNLIGHT est configurée et prête.",
+    "next": "Suivant",
+    "back": "Retour",
+    "finish": "Commencer à utiliser SUNLIGHT"
+  },
+
+  "typology": {
+    "price_anomaly": "Anomalie de prix",
+    "vendor_concentration": "Concentration de fournisseurs",
+    "timing_anomaly": "Anomalie de timing",
+    "split_contract": "Fractionnement de contrat",
+    "geographic_clustering": "Regroupement géographique",
+    "agency_risk": "Risque au niveau de l'agence"
+  },
+
+  "tier": {
+    "red": "ROUGE",
+    "yellow": "JAUNE",
+    "green": "VERT",
+    "red_description": "Indicateur de risque à haute confiance. Typologies multiples ou postérieure élevée.",
+    "yellow_description": "Indicateur de risque modéré. Nécessite un examen approfondi.",
+    "green_description": "Aucune anomalie statistique significative détectée."
+  },
+
+  "evidence_standard": {
+    "beyond_reasonable_doubt": "Au-delà de tout doute raisonnable",
+    "clear_and_convincing": "Preuve claire et convaincante",
+    "balance_of_probabilities": "Balance des probabilités",
+    "reasonable_suspicion": "Soupçon raisonnable"
+  },
+
+  "procurement": {
+    "contract": "Contrat",
+    "contracts": "Contrats",
+    "vendor": "Fournisseur",
+    "agency": "Agence",
+    "contract_value": "Valeur du contrat",
+    "award_date": "Date d'attribution",
+    "sector": "Secteur",
+    "country": "Pays",
+    "description": "Description"
+  },
+
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur s'est produite.",
+    "retry": "Réessayer",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "close": "Fermer",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "export": "Exporter",
+    "refresh": "Actualiser",
+    "back": "Retour",
+    "next": "Suivant",
+    "yes": "Oui",
+    "no": "Non",
+    "of": "de",
+    "total": "Total"
+  },
+
+  "formats": {
+    "date_relative_today": "Aujourd'hui",
+    "date_relative_yesterday": "Hier",
+    "date_relative_days_ago": "Il y a {{count}} jours"
+  }
+}

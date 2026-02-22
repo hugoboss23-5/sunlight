@@ -1,0 +1,186 @@
+{
+  "app": {
+    "name": "SUNLIGHT",
+    "tagline": "استخبارات نزاهة المشتريات"
+  },
+
+  "legal": {
+    "risk_indicator": "مؤشر مخاطر، وليس اتهاماً.",
+    "risk_indicator_full": "يحدد هذا المخرج الشذوذات الإحصائية في بيانات المشتريات. إنه مؤشر مخاطر وليس اتهاماً بالاحتيال. يتطلب التحقيق البشري لتحديد النية.",
+    "disclaimer_footer": "يحدد SUNLIGHT الشذوذات الإحصائية. جميع التنبيهات تتطلب تحقيقاً بشرياً. مؤشر مخاطر، وليس اتهاماً.",
+    "data_notice": "تتم معالجة البيانات بموجب ترخيص مؤسسي. يتم تسجيل جميع عمليات الوصول للامتثال لمسار التدقيق.",
+    "calibration_notice": "تم معايرة الكشف وفقاً لمعيار الإثبات «{{standard}}» بمعدل احتيال مسبق {{prior}}."
+  },
+
+  "nav": {
+    "risk_inbox": "صندوق المخاطر",
+    "case_packet": "ملف القضية",
+    "portfolio": "المحفظة",
+    "admin": "الإدارة",
+    "onboarding": "الإعداد",
+    "settings": "الإعدادات",
+    "language": "اللغة",
+    "logout": "تسجيل الخروج"
+  },
+
+  "risk_inbox": {
+    "title": "صندوق المخاطر",
+    "subtitle": "العقود المُبلّغ عنها التي تتطلب مراجعة المحلل",
+    "filter_all": "الكل",
+    "filter_red": "أحمر",
+    "filter_yellow": "أصفر",
+    "filter_green": "أخضر",
+    "sort_by": "ترتيب حسب",
+    "sort_risk": "درجة المخاطر",
+    "sort_value": "قيمة العقد",
+    "sort_date": "التاريخ",
+    "sort_agency": "الجهة",
+    "no_results": "لا توجد عقود تطابق الفلاتر الحالية.",
+    "showing": "عرض {{count}} من {{total}} عقد",
+    "triage_accept": "قبول للتحقيق",
+    "triage_dismiss": "رفض",
+    "triage_escalate": "تصعيد",
+    "triage_defer": "تأجيل",
+    "keyboard_hint": "J/K للتنقل، 1-4 للفرز، Enter لفتح"
+  },
+
+  "case_packet": {
+    "title": "ملف القضية",
+    "executive_summary": "الملخص التنفيذي",
+    "risk_tier": "مستوى المخاطر",
+    "posterior_probability": "الاحتمال اللاحق",
+    "typologies_triggered": "الأنماط المكتشفة",
+    "evidence_chain": "سلسلة الأدلة",
+    "peer_comparison": "المقارنة مع النظراء",
+    "linkage_analysis": "تحليل الروابط",
+    "audit_trail": "مسار التدقيق",
+    "investigation_steps": "خطوات التحقيق الموصى بها",
+    "calibration_context": "سياق المعايرة",
+    "export_pdf": "تصدير PDF",
+    "export_json": "تصدير JSON"
+  },
+
+  "portfolio": {
+    "title": "نظرة عامة على المحفظة",
+    "total_contracts": "إجمالي العقود",
+    "flagged_contracts": "العقود المُبلّغ عنها",
+    "red_flags": "تنبيهات حمراء",
+    "yellow_flags": "تنبيهات صفراء",
+    "flags_per_1k": "تنبيهات لكل 1,000",
+    "value_at_risk": "القيمة المعرضة للخطر",
+    "by_agency": "حسب الجهة",
+    "by_sector": "حسب القطاع",
+    "by_typology": "حسب النمط",
+    "trend": "الاتجاه"
+  },
+
+  "admin": {
+    "title": "الإدارة",
+    "jurisdiction_panel": "الاختصاص والمعايير",
+    "jurisdiction_description": "تكوين معايرة الكشف والإعدادات الإقليمية لهذا المستأجر.",
+    "institution_profile": "الملف المؤسسي",
+    "continent": "القارة",
+    "country": "البلد",
+    "preferred_currency": "العملة المفضلة",
+    "timezone": "المنطقة الزمنية",
+    "detection_settings": "إعدادات الكشف",
+    "prior_fraud_rate": "معدل الاحتيال المسبق",
+    "red_threshold": "عتبة أحمر",
+    "yellow_threshold": "عتبة أصفر",
+    "evidentiary_standard": "معيار الإثبات",
+    "fdr_alpha": "ألفا FDR",
+    "max_flags_per_1k": "الحد الأقصى للتنبيهات لكل 1,000",
+    "preview_title": "معاينة التكوين",
+    "preview_description": "يطبق هذا الاختيار معلمات الكشف التالية:",
+    "save_profile": "حفظ الملف",
+    "saving": "جارٍ الحفظ...",
+    "saved_success": "تم حفظ الملف بنجاح.",
+    "saved_error": "خطأ في حفظ الملف.",
+    "reset_to_preset": "إعادة تعيين إلى الإعداد المسبق",
+    "custom_overrides": "التخصيصات",
+    "users": "المستخدمون",
+    "api_keys": "مفاتيح API",
+    "audit_log": "سجل التدقيق",
+    "system_health": "صحة النظام"
+  },
+
+  "onboarding": {
+    "title": "مرحباً بك في SUNLIGHT",
+    "step1_title": "اختر مؤسستك",
+    "step1_description": "اختر ملفاً مسبقاً يتوافق مع سياقك المؤسسي.",
+    "step2_title": "تكوين المنطقة",
+    "step2_description": "حدد بلدك وعملتك للتنسيق المحلي.",
+    "step3_title": "مراجعة معلمات الكشف",
+    "step3_description": "تحقق من المعايرة الإحصائية لنشرك.",
+    "step4_title": "جاهز للبدء",
+    "step4_description": "تم تكوين نسخة SUNLIGHT الخاصة بك وهي جاهزة.",
+    "next": "التالي",
+    "back": "رجوع",
+    "finish": "ابدأ استخدام SUNLIGHT"
+  },
+
+  "typology": {
+    "price_anomaly": "شذوذ في السعر",
+    "vendor_concentration": "تركّز الموردين",
+    "timing_anomaly": "شذوذ في التوقيت",
+    "split_contract": "تجزئة العقد",
+    "geographic_clustering": "تجمّع جغرافي",
+    "agency_risk": "مخاطر على مستوى الجهة"
+  },
+
+  "tier": {
+    "red": "أحمر",
+    "yellow": "أصفر",
+    "green": "أخضر",
+    "red_description": "مؤشر مخاطر عالي الثقة. أنماط متعددة أو احتمال لاحق مرتفع.",
+    "yellow_description": "مؤشر مخاطر معتدل. يستدعي مزيداً من المراجعة.",
+    "green_description": "لم يتم الكشف عن شذوذات إحصائية مهمة."
+  },
+
+  "evidence_standard": {
+    "beyond_reasonable_doubt": "ما وراء الشك المعقول",
+    "clear_and_convincing": "دليل واضح ومقنع",
+    "balance_of_probabilities": "ميزان الاحتمالات",
+    "reasonable_suspicion": "اشتباه معقول"
+  },
+
+  "procurement": {
+    "contract": "عقد",
+    "contracts": "عقود",
+    "vendor": "مورّد",
+    "agency": "جهة",
+    "contract_value": "قيمة العقد",
+    "award_date": "تاريخ الترسية",
+    "sector": "القطاع",
+    "country": "البلد",
+    "description": "الوصف"
+  },
+
+  "common": {
+    "loading": "جارٍ التحميل...",
+    "error": "حدث خطأ.",
+    "retry": "إعادة المحاولة",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد",
+    "save": "حفظ",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "close": "إغلاق",
+    "search": "بحث",
+    "filter": "فلتر",
+    "export": "تصدير",
+    "refresh": "تحديث",
+    "back": "رجوع",
+    "next": "التالي",
+    "yes": "نعم",
+    "no": "لا",
+    "of": "من",
+    "total": "الإجمالي"
+  },
+
+  "formats": {
+    "date_relative_today": "اليوم",
+    "date_relative_yesterday": "أمس",
+    "date_relative_days_ago": "منذ {{count}} أيام"
+  }
+}

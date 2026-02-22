@@ -7,13 +7,17 @@ import CaseDetail from './views/CaseDetail';
 import Admin from './views/Admin';
 import Onboarding from './views/Onboarding';
 import Login from './views/Login';
+import Workstation from './pages/Workstation';
+import Demo from './pages/Demo';
 
 export default function App() {
   return (
     <AppProvider>
       <Routes>
+        <Route path="/" element={<Workstation />} />
+        <Route path="/demo" element={<Demo />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/*" element={<ProtectedLayout />} />
+        <Route path="/app/*" element={<ProtectedLayout />} />
       </Routes>
     </AppProvider>
   );
