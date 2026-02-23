@@ -112,6 +112,7 @@ class CalibrationProfile:
 
     # Tier requirements
     min_typologies_for_red: int = 2  # OR 1 typology + posterior > red_threshold
+    min_ci_for_yellow: int = 66  # Minimum markup CI lower bound for YELLOW tier
 
     # Statistical parameters
     fdr_alpha: float = 0.05
@@ -171,6 +172,7 @@ class CalibrationProfile:
             "red_posterior_threshold": self.red_posterior_threshold,
             "yellow_posterior_threshold": self.yellow_posterior_threshold,
             "min_typologies_for_red": self.min_typologies_for_red,
+            "min_ci_for_yellow": self.min_ci_for_yellow,
             "fdr_alpha": self.fdr_alpha,
             "bootstrap_ci_level": self.bootstrap_ci_level,
             "bootstrap_n_resamples": self.bootstrap_n_resamples,
@@ -532,6 +534,7 @@ def get_tier_thresholds(
         "red": profile.red_posterior_threshold,
         "yellow": profile.yellow_posterior_threshold,
         "min_typ_red": profile.min_typologies_for_red,
+        "min_ci_yellow": profile.min_ci_for_yellow,
     }
 
 

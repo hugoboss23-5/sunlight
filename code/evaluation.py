@@ -47,6 +47,7 @@ from doj_validation import (
     load_doj_cases, build_agency_cache, map_doj_agency,
     synthesize_doj_contract, get_clean_contracts,
 )
+from calibration_config import get_profile, get_tier_thresholds
 from sunlight_logging import get_logger
 
 logger = get_logger("evaluation")
@@ -56,9 +57,9 @@ logger = get_logger("evaluation")
 # ---------------------------------------------------------------------------
 
 ANALYST_MINUTES_PER_FLAG = 45  # Estimated analyst minutes per flagged contract review
-CI_GATE_PRECISION_MIN = 0.05   # Block CI if precision falls below 5%
+CI_GATE_PRECISION_MIN = 0.25   # Block CI if precision falls below 25%
 CI_GATE_RECALL_MIN = 0.90      # Block CI if recall falls below 90%
-CI_GATE_FLAGS_PER_1K_MAX = 200  # Block CI if flags/1k exceeds cap
+CI_GATE_FLAGS_PER_1K_MAX = 150  # Block CI if flags/1k exceeds 150
 
 RULEPACK_VERSION = "2.0.0"
 
@@ -174,13 +175,17 @@ def bootstrap_metric_ci(y_true: List[bool], y_pred: List[bool],
 
 def run_full_evaluation(db_path: str, cases_path: str,
                         run_seed: int = 42, n_bootstrap: int = 1000,
-                        n_clean: int = 200) -> Dict:
+                        n_clean: int = 200,
+                        calibration_profile: str = "doj_federal") -> Dict:
     """
     Run the complete evaluation suite. Produces all metrics required
     for institutional review.
     """
+    cal_profile = get_profile(calibration_profile) if isinstance(calibration_profile, str) else calibration_profile
+    tier_thresholds = get_tier_thresholds(cal_profile)
     logger.info("Evaluation starting",
-                extra={"n_bootstrap": n_bootstrap, "n_clean": n_clean})
+                extra={"n_bootstrap": n_bootstrap, "n_clean": n_clean,
+                       "calibration_profile": cal_profile.name})
 
     doj_cases = load_doj_cases(cases_path)
     agency_cache = build_agency_cache(db_path)
@@ -201,8 +206,8 @@ def run_full_evaluation(db_path: str, cases_path: str,
         db_agency = map_doj_agency(case['agency'], agency_cache)
         contract = synthesize_doj_contract(case, agency_cache, db_agency)
         seed = derive_contract_seed(run_seed, case['case_id'])
-        score = score_contract(contract, seed, config, ba)
-        tier, priority = assign_tier(score, score.get('raw_pvalue', 1.0), False)
+        score = score_contract(contract, seed, config, ba, calibration_profile=cal_profile)
+        tier, priority = assign_tier(score, score.get('raw_pvalue', 1.0), False, thresholds=tier_thresholds)
 
         is_price_fraud = case['markup_pct'] > 0
         predicted_positive = tier in ('RED', 'YELLOW')
@@ -230,8 +235,8 @@ def run_full_evaluation(db_path: str, cases_path: str,
 
     for contract in clean_contracts:
         seed = derive_contract_seed(run_seed, contract['contract_id'])
-        score = score_contract(contract, seed, config, ba)
-        tier, priority = assign_tier(score, score.get('raw_pvalue', 1.0), False)
+        score = score_contract(contract, seed, config, ba, calibration_profile=cal_profile)
+        tier, priority = assign_tier(score, score.get('raw_pvalue', 1.0), False, thresholds=tier_thresholds)
         predicted_positive = tier in ('RED', 'YELLOW')
         confidence = max(0, min(100, int(
             (score.get('bayesian_posterior', 0) or 0) * 50 +
@@ -331,6 +336,10 @@ def run_full_evaluation(db_path: str, cases_path: str,
             'n_evaluable': len(evaluable),
             'n_excluded': len(excluded),
             'operational_threshold': 'RED or YELLOW tier',
+            'calibration_profile': cal_profile.name,
+            'base_rate': cal_profile.base_rate,
+            'red_posterior_threshold': cal_profile.red_posterior_threshold,
+            'yellow_posterior_threshold': cal_profile.yellow_posterior_threshold,
         },
         'label_set': label_set,
         'dataset_composition': {
@@ -538,6 +547,8 @@ if __name__ == "__main__":
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--bootstrap', type=int, default=1000)
     parser.add_argument('--clean', type=int, default=200)
+    parser.add_argument('--profile', type=str, default='doj_federal',
+                        help='Calibration profile name (e.g., doj_federal, world_bank_africa)')
     parser.add_argument('--out-dir', default='docs')
     parser.add_argument('--ci', action='store_true',
                         help='CI mode: enforce gates and exit 1 on failure')
@@ -557,7 +568,8 @@ if __name__ == "__main__":
     os.makedirs(out_dir, exist_ok=True)
 
     report = run_full_evaluation(db, cases, run_seed=args.seed,
-                                  n_bootstrap=args.bootstrap, n_clean=args.clean)
+                                  n_bootstrap=args.bootstrap, n_clean=args.clean,
+                                  calibration_profile=args.profile)
 
     json_path = os.path.join(out_dir, 'evaluation_report.json')
     md_path = os.path.join(out_dir, 'evaluation_report.md')

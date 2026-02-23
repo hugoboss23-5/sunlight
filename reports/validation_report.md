@@ -1,6 +1,6 @@
 # SUNLIGHT DOJ Validation Report
 
-**Date:** 2026-02-17
+**Date:** 2026-02-23
 **Methodology Version:** 2.0.0
 **Bootstrap Iterations:** 1,000
 
@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-Validated SUNLIGHT scoring pipeline against **10 DOJ-prosecuted fraud cases** and **50 known-clean contracts**.
+Validated SUNLIGHT scoring pipeline against **10 DOJ-prosecuted fraud cases** and **200 known-clean contracts**.
 
 - **9** cases involve price-based fraud (detectable by statistical analysis)
 - **1** case(s) involve non-price fraud (outside scope — e.g., false certification)
@@ -19,11 +19,11 @@ Validated SUNLIGHT scoring pipeline against **10 DOJ-prosecuted fraud cases** an
 
 | Metric | Value |
 |---|---|
-| **Precision** | 36.0% |
+| **Precision** | 28.1% |
 | **Recall** | 100.0% |
-| **F1 Score** | 52.9% |
-| **Accuracy** | 72.9% |
-| **Specificity** | 68.0% |
+| **F1 Score** | 43.9% |
+| **Accuracy** | 89.0% |
+| **Specificity** | 88.5% |
 
 ---
 
@@ -32,7 +32,7 @@ Validated SUNLIGHT scoring pipeline against **10 DOJ-prosecuted fraud cases** an
 | | Predicted Positive (RED/YELLOW) | Predicted Negative (GREEN/GRAY) |
 |---|---|---|
 | **Actual Fraud** (DOJ price cases) | TP = 9 | FN = 0 |
-| **Actual Clean** (below-median) | FP = 16 | TN = 34 |
+| **Actual Clean** (below-median) | FP = 23 | TN = 177 |
 
 ---
 
@@ -95,9 +95,9 @@ Validated SUNLIGHT scoring pipeline against **10 DOJ-prosecuted fraud cases** an
 
 | Tier | Count |
 |---|---|
-| RED | 1 |
-| YELLOW | 15 |
-| GREEN | 34 |
+| RED | 4 |
+| YELLOW | 19 |
+| GREEN | 177 |
 | GRAY | 0 |
 
 ---

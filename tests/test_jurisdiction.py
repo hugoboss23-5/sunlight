@@ -297,9 +297,9 @@ class TestTranslationFiles:
     @pytest.fixture
     def translations(self):
         """Load all translation files."""
-        locales_dir = os.path.join(os.path.dirname(__file__), "frontend", "i18n", "locales")
+        locales_dir = os.path.join(os.path.dirname(__file__), "..", "sunlight-dashboard", "src", "i18n", "locales")
         if not os.path.exists(locales_dir):
-            locales_dir = os.path.join(os.path.dirname(__file__), "..", "frontend", "i18n", "locales")
+            locales_dir = os.path.join(os.path.dirname(__file__), "frontend", "i18n", "locales")
 
         translations = {}
         for fname in os.listdir(locales_dir):

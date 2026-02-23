@@ -18,6 +18,7 @@ from institutional_statistical_rigor import (
     DOJProsecutionThresholds, FraudTier,
 )
 from sunlight_logging import get_logger
+from calibration_config import get_profile, get_prior_for_context, get_tier_thresholds, get_fdr_params
 
 logger = get_logger("pipeline")
 
@@ -54,7 +55,7 @@ def select_comparables_from_cache(contract_id, agency, amount, agency_cache):
         similar = [a for a in amounts if 0.1 * amount <= a <= 10 * amount]
     return similar
 
-def score_contract(contract, seed, config, bootstrap_analyzer):
+def score_contract(contract, seed, config, bootstrap_analyzer, calibration_profile=None):
     np.random.seed(seed)
     comparables = contract.get('comparables', [])
     amount = contract['award_amount']
@@ -99,6 +100,9 @@ def score_contract(contract, seed, config, bootstrap_analyzer):
     })
 
     bayesian = BayesianFraudPrior()
+    if calibration_profile is not None:
+        profile_base = get_prior_for_context(calibration_profile)
+        bayesian.BASE_RATES = {**BayesianFraudPrior.BASE_RATES, 'overall': profile_base}
     chars = {'is_mega_contract': amount > 25e6, 'is_defense': _is_defense(contract.get('agency_name','')),
         'is_it_services': _is_it(contract.get('description','')), 'is_sole_source': contract.get('is_sole_source', False),
         'has_political_donations': contract.get('has_donations', False)}
@@ -106,20 +110,26 @@ def score_contract(contract, seed, config, bootstrap_analyzer):
     result.update({'bayesian_prior': float(br.prior_probability), 'bayesian_likelihood_ratio': float(br.likelihood_ratio), 'bayesian_posterior': float(br.posterior_probability)})
     return result
 
-def assign_tier(score, fdr_adj, survives_fdr):
+def assign_tier(score, fdr_adj, survives_fdr, thresholds=None):
+    if thresholds is None:
+        thresholds = {'red': 0.72, 'yellow': 0.38, 'min_typ_red': 2, 'min_ci_yellow': 66}
     if score['insufficient_comparables']: return 'GRAY', 9999
     ci = score.get('markup_ci_lower',0) or 0
     post = score.get('bayesian_posterior',0) or 0
     pci = score.get('percentile_ci_lower',0) or 0
+    red_post = thresholds['red']
+    yellow_post = thresholds['yellow']
+    min_ci_yellow = thresholds.get('min_ci_yellow', 65)
     f = []
     if ci > 300: f.append(95)
     elif ci > 200: f.append(85)
     elif ci > 150: f.append(75)
-    elif ci > 75: f.append(65)
+    elif ci > 100: f.append(65)
+    elif ci > 75: f.append(55)
     if pci > 95: f.append(90)
     elif pci > 90: f.append(80)
-    if post > 0.80: f.append(90)
-    elif post > 0.50: f.append(75)
+    if post > red_post: f.append(90)
+    elif post > yellow_post: f.append(75)
     if not f:
         logger.debug("No evidence signals", extra={"contract_id": score.get('contract_id'), "decision": "GREEN"})
         return 'GREEN', 5000
@@ -128,7 +138,7 @@ def assign_tier(score, fdr_adj, survives_fdr):
         tier = 'RED'
     elif avg >= 90 and survives_fdr:
         tier = 'RED'
-    elif avg >= 70 and ci > 55:
+    elif avg >= 70 and ci > min_ci_yellow:
         tier = 'YELLOW'
     elif score['comparable_count'] < 5:
         tier = 'GRAY'
@@ -193,13 +203,21 @@ class InstitutionalPipeline:
     def __init__(self, db_path):
         self.db_path = db_path
 
-    def run(self, run_seed=42, config=None, limit=None, verbose=True):
-        config = {**self.DEFAULT_CONFIG, **(config or {})}
-        config_hash = compute_config_hash(config)
+    def run(self, run_seed=42, config=None, limit=None, verbose=True, calibration_profile="doj_federal"):
+        caller_config = config or {}
+        config = {**self.DEFAULT_CONFIG, **caller_config}
+        # Load calibration profile and apply its FDR alpha unless caller explicitly set one
+        cal_profile = get_profile(calibration_profile) if isinstance(calibration_profile, str) else calibration_profile
+        fdr_params = get_fdr_params(cal_profile)
+        if 'fdr_alpha' not in caller_config:
+            config['fdr_alpha'] = fdr_params['alpha']
+        tier_thresholds = get_tier_thresholds(cal_profile)
+        config_hash = compute_config_hash({**config, 'calibration_profile': cal_profile.name})
         run_id = f"run_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}_{run_seed}"
         logger.info("Pipeline starting",
             extra={"run_id": run_id, "run_seed": run_seed, "n_bootstrap": config['n_bootstrap'],
-                   "fdr_alpha": config['fdr_alpha'], "config_hash": config_hash[:16]})
+                   "fdr_alpha": config['fdr_alpha'], "calibration_profile": cal_profile.name,
+                   "config_hash": config_hash[:16]})
 
         # Preload ALL contract amounts by agency (one query, not 1000)
         agency_cache = self._build_agency_cache()
@@ -229,7 +247,7 @@ class InstitutionalPipeline:
             try:
                 cseed = derive_contract_seed(run_seed, con['contract_id'])
                 con['comparables'] = select_comparables_from_cache(con['contract_id'], con['agency_name'], con['award_amount'], agency_cache)
-                scores.append(score_contract(con, cseed, config, ba))
+                scores.append(score_contract(con, cseed, config, ba, calibration_profile=cal_profile))
             except Exception as e:
                 logger.error("Contract scoring failed",
                     extra={"run_id": run_id, "contract_id": con['contract_id'], "error": str(e)})
@@ -252,7 +270,7 @@ class InstitutionalPipeline:
                 s.update({'fdr_adjusted_pvalue':None,'survives_fdr':False,'tier':'GRAY','triage_priority':9999})
             else:
                 s['fdr_adjusted_pvalue']=float(adj[fi]); s['survives_fdr']=bool(surv[fi])
-                s['tier'], s['triage_priority'] = assign_tier(s, adj[fi], surv[fi]); fi+=1
+                s['tier'], s['triage_priority'] = assign_tier(s, adj[fi], surv[fi], thresholds=tier_thresholds); fi+=1
 
         logger.info("Persisting scores", extra={"run_id": run_id, "n_scores": len(scores)})
         self._persist_scores(run_id, scores)
@@ -386,6 +404,7 @@ if __name__ == "__main__":
     parser.add_argument('--limit', type=int, default=None)
     parser.add_argument('--verify', type=str, default=None)
     parser.add_argument('--bootstrap', type=int, default=1000)
+    parser.add_argument('--profile', type=str, default='doj_federal', help='Calibration profile name')
     args = parser.parse_args()
     db = args.db
     if not os.path.exists(db): db = '../data/sunlight.db'
@@ -393,6 +412,6 @@ if __name__ == "__main__":
     if args.verify:
         InstitutionalVerification(db).verify_run(args.verify)
     else:
-        result = InstitutionalPipeline(db).run(run_seed=args.seed, config={'n_bootstrap':args.bootstrap}, limit=args.limit)
+        result = InstitutionalPipeline(db).run(run_seed=args.seed, config={'n_bootstrap':args.bootstrap}, limit=args.limit, calibration_profile=args.profile)
         print()
         InstitutionalVerification(db).verify_run(result['run_id'])

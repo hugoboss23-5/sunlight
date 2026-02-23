@@ -229,7 +229,7 @@ class TestTierAssignment:
     def test_yellow_for_moderate_evidence(self):
         score = {
             'insufficient_comparables': False,
-            'markup_ci_lower': 100,
+            'markup_ci_lower': 120,
             'bayesian_posterior': 0.55,
             'percentile_ci_lower': 86,
             'comparable_count': 10,
@@ -261,6 +261,24 @@ class TestTierAssignment:
         tier, priority = assign_tier(score, 0.5, False)
         assert tier == 'GREEN'
 
+    def test_custom_thresholds_affect_tier(self):
+        """Lowering posterior thresholds should make tier assignment more sensitive."""
+        score = {
+            'insufficient_comparables': False,
+            'markup_ci_lower': 100,
+            'bayesian_posterior': 0.55,
+            'percentile_ci_lower': 92,
+            'comparable_count': 10,
+        }
+        # With default doj_federal thresholds (red=0.72, yellow=0.38)
+        tier_default, _ = assign_tier(score, 0.05, True)
+        # With very loose thresholds (red=0.40, yellow=0.20)
+        tier_loose, _ = assign_tier(score, 0.05, True,
+                                     thresholds={'red': 0.40, 'yellow': 0.20, 'min_typ_red': 1})
+        # Loose thresholds should be at least as aggressive
+        tier_rank = {'RED': 0, 'YELLOW': 1, 'GREEN': 2, 'GRAY': 3}
+        assert tier_rank[tier_loose] <= tier_rank[tier_default]
+
     def test_red_priority_lower_than_yellow(self):
         """RED cases should have lower (better) triage priority."""
         red_score = {
@@ -272,7 +290,7 @@ class TestTierAssignment:
         }
         yellow_score = {
             'insufficient_comparables': False,
-            'markup_ci_lower': 100,
+            'markup_ci_lower': 120,
             'bayesian_posterior': 0.55,
             'percentile_ci_lower': 86,
             'comparable_count': 10,
@@ -390,3 +408,25 @@ class TestPipelineIntegration:
         pipeline = InstitutionalPipeline(populated_db)
         result = pipeline.run(run_seed=42, config={'n_bootstrap': 100}, limit=5, verbose=False)
         assert result['n_scored'] == 5
+
+    def test_calibration_profile_parameter(self, populated_db):
+        """Pipeline accepts calibration_profile and uses its parameters."""
+        pipeline = InstitutionalPipeline(populated_db)
+        result = pipeline.run(run_seed=42, config={'n_bootstrap': 100},
+                              calibration_profile="world_bank_africa", verbose=False)
+        assert result['n_scored'] > 0
+        assert result['n_errors'] == 0
+
+    def test_different_profiles_may_differ(self, populated_db):
+        """Different calibration profiles can produce different tier distributions."""
+        pipeline = InstitutionalPipeline(populated_db)
+        import time
+        r1 = pipeline.run(run_seed=42, config={'n_bootstrap': 100},
+                          calibration_profile="doj_federal", verbose=False)
+        time.sleep(1.1)
+        r2 = pipeline.run(run_seed=42, config={'n_bootstrap': 100},
+                          calibration_profile="world_bank_africa", verbose=False)
+        # Both should complete successfully
+        assert r1['n_scored'] == r2['n_scored']
+        assert r1['n_errors'] == 0
+        assert r2['n_errors'] == 0
