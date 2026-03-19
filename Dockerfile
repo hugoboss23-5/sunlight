@@ -2,23 +2,21 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-# System deps
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# Python deps
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Application code
 COPY code/ ./code/
 COPY data/ ./data/
 COPY prosecuted_cases.json ./
 COPY migrations/ ./migrations/
 COPY worker.py ./
+COPY templates/ ./templates/
+COPY static/ ./static/
 
-# Ensure internal imports resolve (api.py uses sys.path.insert for siblings)
 ENV PYTHONPATH=/app/code \
     SUNLIGHT_DB_PATH=/app/data/sunlight.db \
     SUNLIGHT_AUTH_ENABLED=true \

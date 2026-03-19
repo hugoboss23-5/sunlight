@@ -1,247 +1,2021 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SUNLIGHT | Procurement Fraud Detection</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/dashboard.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SUNLIGHT | Procurement Fraud Detection</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================================
+       DESIGN TOKEN SYSTEM
+       ============================================================ */
+    :root {
+      /* Surface hierarchy */
+      --bg-base:     #0D1117;
+      --bg-surface:  #161B22;
+      --bg-elevated: #1C2128;
+      --bg-overlay:  #22272E;
+
+      /* Borders */
+      --border-subtle:  rgba(240,246,252,0.07);
+      --border-default: rgba(240,246,252,0.12);
+      --border-muted:   rgba(240,246,252,0.20);
+
+      /* Text hierarchy */
+      --text-primary:   #E6EDF3;
+      --text-secondary: #8B949E;
+      --text-tertiary:  #6E7681;
+      --text-disabled:  #484F58;
+
+      /* Semantic: RED tier */
+      --danger:        #F85149;
+      --danger-subtle: rgba(248,81,73,0.08);
+      --danger-border: #B91C1C;
+
+      /* Semantic: YELLOW tier */
+      --warning:        #E3B341;
+      --warning-subtle: rgba(227,179,65,0.07);
+      --warning-border: #B45309;
+
+      /* Semantic: GREEN tier */
+      --success:        #3FB950;
+      --success-subtle: rgba(63,185,80,0.05);
+      --success-border: #166534;
+
+      /* Semantic: GRAY tier */
+      --neutral:        #6E7681;
+      --neutral-subtle: rgba(110,118,129,0.06);
+      --neutral-border: #3A3A50;
+
+      /* Accent */
+      --accent:       #388BFD;
+      --accent-muted: rgba(56,139,253,0.12);
+
+      /* Typography */
+      --font-ui:   'IBM Plex Sans', sans-serif;
+      --font-mono: 'IBM Plex Mono', monospace;
+
+      /* Spacing (4px base) */
+      --sp-1: 4px;
+      --sp-2: 8px;
+      --sp-3: 12px;
+      --sp-4: 16px;
+      --sp-5: 20px;
+      --sp-6: 24px;
+
+      /* Layout */
+      --rail-w: 220px;
+      --panel-w: 380px;
+      --topbar-h: 48px;
+      --row-h: 36px;
+    }
+
+    /* ============================================================
+       RESET
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+    body {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      line-height: 20px;
+      background: var(--bg-base);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+    }
+    button { font-family: var(--font-ui); cursor: pointer; border: none; }
+    input, select { font-family: var(--font-ui); }
+    a { color: var(--accent); text-decoration: none; }
+
+    /* ============================================================
+       TOP BAR
+       ============================================================ */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--topbar-h);
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-default);
+      display: flex;
+      align-items: center;
+      padding: 0 var(--sp-4);
+      gap: var(--sp-4);
+      z-index: 100;
+    }
+
+    .topbar-brand {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      flex-shrink: 0;
+    }
+
+    .topbar-wordmark {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      color: var(--text-primary);
+    }
+
+    .topbar-wordmark span {
+      color: var(--warning);
+    }
+
+    .topbar-divider {
+      width: 1px;
+      height: 20px;
+      background: var(--border-default);
+    }
+
+    .topbar-subtitle {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .topbar-nav {
+      display: flex;
+      gap: 0;
+      margin-left: var(--sp-5);
+    }
+
+    .topbar-nav a {
+      color: var(--text-secondary);
+      font-size: 12px;
+      padding: 0 var(--sp-3);
+      height: var(--topbar-h);
+      display: flex;
+      align-items: center;
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .topbar-nav a:hover { color: var(--text-primary); }
+    .topbar-nav a.active {
+      color: var(--text-primary);
+      border-bottom-color: var(--accent);
+    }
+
+    .topbar-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: var(--sp-4);
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--success);
+      flex-shrink: 0;
+    }
+
+    .status-dot.connecting { background: var(--warning); }
+    .status-dot.error { background: var(--danger); }
+
+    .topbar-stat {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .topbar-stat strong {
+      font-family: var(--font-mono);
+      color: var(--text-primary);
+      font-size: 12px;
+    }
+
+    .btn-run {
+      background: var(--accent);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 4px;
+      letter-spacing: 0.03em;
+    }
+
+    .btn-run:hover { background: #2f7de0; }
+
+    /* ============================================================
+       LAYOUT SHELL
+       ============================================================ */
+    .shell {
+      display: flex;
+      height: 100vh;
+      padding-top: var(--topbar-h);
+    }
+
+    /* ============================================================
+       LEFT RAIL
+       ============================================================ */
+    .rail {
+      width: var(--rail-w);
+      flex-shrink: 0;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border-default);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .rail::-webkit-scrollbar { width: 4px; }
+    .rail::-webkit-scrollbar-track { background: transparent; }
+    .rail::-webkit-scrollbar-thumb { background: var(--border-muted); border-radius: 2px; }
+
+    .rail-section {
+      padding: var(--sp-4);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .rail-section-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      margin-bottom: var(--sp-3);
+    }
+
+    /* Tier summary counts */
+    .tier-counts { display: flex; flex-direction: column; gap: var(--sp-1); }
+
+    .tier-count-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px var(--sp-2);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    .tier-count-row:hover { background: var(--bg-elevated); }
+    .tier-count-row.active { background: var(--bg-elevated); }
+
+    .tier-count-left {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+    }
+
+    .tier-pip {
+      width: 3px;
+      height: 14px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .tier-pip.RED    { background: var(--danger); }
+    .tier-pip.YELLOW { background: var(--warning); }
+    .tier-pip.GREEN  { background: var(--success); }
+    .tier-pip.GRAY   { background: var(--neutral); }
+
+    .tier-count-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .tier-count-num {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    /* Filters */
+    .filter-group { margin-bottom: var(--sp-3); }
+
+    .filter-label {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      margin-bottom: var(--sp-1);
+      display: block;
+    }
+
+    .filter-select, .filter-input {
+      width: 100%;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-default);
+      color: var(--text-primary);
+      font-size: 12px;
+      padding: 5px var(--sp-2);
+      border-radius: 4px;
+      outline: none;
+      appearance: none;
+    }
+
+    .filter-select:focus, .filter-input:focus {
+      border-color: var(--accent);
+    }
+
+    .filter-select option { background: var(--bg-overlay); }
+
+    /* Sort */
+    .sort-options { display: flex; flex-direction: column; gap: var(--sp-1); }
+
+    .sort-option {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      font-size: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 4px var(--sp-2);
+      border-radius: 3px;
+    }
+
+    .sort-option:hover { color: var(--text-primary); }
+    .sort-option.active { color: var(--text-primary); }
+
+    .sort-radio {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      border: 1px solid var(--border-muted);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sort-radio.active::after {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    /* ============================================================
+       CENTRAL WORKSPACE
+       ============================================================ */
+    .workspace {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    /* Table header bar */
+    .table-header-bar {
+      display: flex;
+      align-items: center;
+      padding: var(--sp-2) var(--sp-4);
+      border-bottom: 1px solid var(--border-default);
+      background: var(--bg-surface);
+      gap: var(--sp-3);
+      flex-shrink: 0;
+    }
+
+    .table-title {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .table-count-badge {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-default);
+      color: var(--text-secondary);
+      padding: 1px 7px;
+      border-radius: 10px;
+    }
+
+    .table-search {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-default);
+      color: var(--text-primary);
+      font-size: 12px;
+      padding: 4px var(--sp-2);
+      border-radius: 4px;
+      outline: none;
+      width: 200px;
+    }
+
+    .table-search:focus { border-color: var(--accent); }
+    .table-search::placeholder { color: var(--text-disabled); }
+
+    .table-actions-right {
+      margin-left: auto;
+      display: flex;
+      gap: var(--sp-2);
+    }
+
+    .btn-sm {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-weight: 500;
+      transition: background 0.1s;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border-default);
+      color: var(--text-secondary);
+    }
+
+    .btn-ghost:hover {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+    }
+
+    /* Bulk action bar */
+    .bulk-bar {
+      display: none;
+      align-items: center;
+      gap: var(--sp-3);
+      padding: var(--sp-2) var(--sp-4);
+      background: var(--accent-muted);
+      border-bottom: 1px solid var(--accent);
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    .bulk-bar.visible { display: flex; }
+
+    .bulk-bar-count { color: var(--accent); font-weight: 500; font-family: var(--font-mono); }
+
+    /* Table wrapper */
+    .table-wrap {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: auto;
+    }
+
+    .table-wrap::-webkit-scrollbar { width: 6px; height: 6px; }
+    .table-wrap::-webkit-scrollbar-track { background: transparent; }
+    .table-wrap::-webkit-scrollbar-thumb { background: var(--border-muted); border-radius: 3px; }
+
+    /* Main table */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    .data-table thead {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--bg-surface);
+    }
+
+    .data-table th {
+      padding: 0 var(--sp-4);
+      height: 32px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      border-bottom: 1px solid var(--border-default);
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .data-table th:hover { color: var(--text-secondary); }
+
+    .data-table th.sorted { color: var(--text-primary); }
+
+    .sort-arrow { margin-left: 4px; opacity: 0.5; }
+    .sort-arrow.active { opacity: 1; color: var(--accent); }
+
+    /* Column widths */
+    .col-tier    { width: 90px; }
+    .col-id      { width: 130px; }
+    .col-vendor  { width: 180px; }
+    .col-buyer   { width: 160px; }
+    .col-value   { width: 100px; text-align: right !important; }
+    .col-score   { width: 72px; text-align: right !important; }
+    .col-flags   { width: 72px; text-align: center !important; }
+    .col-date    { width: 100px; }
+    .col-status  { width: 100px; }
+
+    /* Table rows */
+    .data-table tbody tr {
+      border-bottom: 1px solid var(--border-subtle);
+      cursor: pointer;
+      transition: background 0.08s;
+    }
+
+    .data-table tbody tr:hover { background: var(--bg-elevated); }
+    .data-table tbody tr.selected { background: var(--accent-muted); }
+    .data-table tbody tr.active-row { background: var(--bg-elevated); }
+
+    /* Tier row treatments */
+    .data-table tbody tr.tier-RED    { border-left: 3px solid var(--danger-border); background: var(--danger-subtle); }
+    .data-table tbody tr.tier-RED:hover    { background: rgba(248,81,73,0.13); }
+    .data-table tbody tr.tier-YELLOW { border-left: 3px solid var(--warning-border); background: var(--warning-subtle); }
+    .data-table tbody tr.tier-YELLOW:hover { background: rgba(227,179,65,0.12); }
+    .data-table tbody tr.tier-GREEN  { border-left: 3px solid transparent; }
+    .data-table tbody tr.tier-GRAY   { border-left: 3px solid var(--neutral-border); background: var(--neutral-subtle); }
+
+    .data-table td {
+      padding: 0 var(--sp-4);
+      height: var(--row-h);
+      font-size: 12px;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      vertical-align: middle;
+    }
+
+    /* Tier badge */
+    .tier-badge {
+      display: inline-flex;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      padding: 2px 7px;
+      border-radius: 3px;
+    }
+
+    .tier-badge.RED    { background: rgba(248,81,73,0.15); color: var(--danger); border: 1px solid rgba(248,81,73,0.3); }
+    .tier-badge.YELLOW { background: transparent; color: var(--warning); border: 1px solid rgba(227,179,65,0.4); }
+    .tier-badge.GREEN  { background: transparent; color: var(--success); border: 1px solid rgba(63,185,80,0.3); font-size: 9px; }
+    .tier-badge.GRAY   { background: transparent; color: var(--neutral); border: 1px solid rgba(110,118,129,0.3); }
+
+    /* Contract ID cell */
+    .contract-id {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--accent);
+    }
+
+    /* Score cell */
+    .score-val {
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    .score-val.RED    { color: var(--danger); }
+    .score-val.YELLOW { color: var(--warning); }
+    .score-val.GREEN  { color: var(--success); }
+    .score-val.GRAY   { color: var(--neutral); }
+
+    /* Flags badge */
+    .flags-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      min-width: 20px;
+      height: 18px;
+      padding: 0 5px;
+      border-radius: 9px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-default);
+      color: var(--text-secondary);
+    }
+
+    .flags-count.has-flags {
+      background: rgba(248,81,73,0.1);
+      border-color: rgba(248,81,73,0.25);
+      color: var(--danger);
+    }
+
+    /* Value cell */
+    .value-cell {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      text-align: right;
+    }
+
+    /* Date cell */
+    .date-cell {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    /* Status badge */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-default);
+      color: var(--text-secondary);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .status-badge.escalated {
+      background: rgba(56,139,253,0.1);
+      border-color: rgba(56,139,253,0.3);
+      color: var(--accent);
+    }
+
+    .status-badge.reviewed {
+      background: rgba(63,185,80,0.08);
+      border-color: rgba(63,185,80,0.2);
+      color: var(--success);
+    }
+
+    /* Empty state */
+    .empty-row td {
+      text-align: center;
+      padding: 48px 0;
+      color: var(--text-tertiary);
+      font-size: 12px;
+    }
+
+    /* Loading state */
+    .loading-row td {
+      text-align: center;
+      padding: 32px 0;
+      color: var(--text-tertiary);
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .loading-text { animation: pulse 1.4s ease-in-out infinite; font-size: 12px; }
+
+    /* ============================================================
+       RIGHT CONTEXT PANEL
+       ============================================================ */
+    .context-panel {
+      width: var(--panel-w);
+      flex-shrink: 0;
+      background: var(--bg-surface);
+      border-left: 1px solid var(--border-default);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: translateX(var(--panel-w));
+      transition: transform 0.2s ease;
+    }
+
+    .context-panel.open { transform: translateX(0); }
+
+    .panel-topbar {
+      display: flex;
+      align-items: center;
+      padding: var(--sp-3) var(--sp-4);
+      border-bottom: 1px solid var(--border-default);
+      gap: var(--sp-2);
+      flex-shrink: 0;
+    }
+
+    .panel-close {
+      background: transparent;
+      color: var(--text-tertiary);
+      font-size: 16px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      line-height: 1;
+      margin-left: auto;
+    }
+
+    .panel-close:hover { background: var(--bg-elevated); color: var(--text-primary); }
+
+    .panel-contract-id {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--accent);
+    }
+
+    .panel-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--sp-4);
+    }
+
+    .panel-body::-webkit-scrollbar { width: 4px; }
+    .panel-body::-webkit-scrollbar-track { background: transparent; }
+    .panel-body::-webkit-scrollbar-thumb { background: var(--border-muted); border-radius: 2px; }
+
+    /* Panel tier + score header */
+    .panel-tier-header {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      margin-bottom: var(--sp-4);
+      padding-bottom: var(--sp-4);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .panel-tier-badge {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      padding: 4px 12px;
+      border-radius: 4px;
+    }
+
+    .panel-tier-badge.RED    { background: rgba(248,81,73,0.15); color: var(--danger); border: 1px solid rgba(248,81,73,0.35); }
+    .panel-tier-badge.YELLOW { background: rgba(227,179,65,0.10); color: var(--warning); border: 1px solid rgba(227,179,65,0.35); }
+    .panel-tier-badge.GREEN  { background: rgba(63,185,80,0.08); color: var(--success); border: 1px solid rgba(63,185,80,0.3); }
+    .panel-tier-badge.GRAY   { background: rgba(110,118,129,0.08); color: var(--neutral); border: 1px solid rgba(110,118,129,0.3); }
+
+    .panel-score-block { display: flex; flex-direction: column; }
+
+    .panel-score-num {
+      font-family: var(--font-mono);
+      font-size: 22px;
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    .panel-score-num.RED    { color: var(--danger); }
+    .panel-score-num.YELLOW { color: var(--warning); }
+    .panel-score-num.GREEN  { color: var(--success); }
+    .panel-score-num.GRAY   { color: var(--neutral); }
+
+    .panel-score-label {
+      font-size: 10px;
+      color: var(--text-tertiary);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .panel-disclaimer {
+      margin-left: auto;
+      text-align: right;
+    }
+
+    .panel-disclaimer-text {
+      font-size: 9px;
+      color: var(--text-tertiary);
+      font-style: italic;
+      line-height: 14px;
+      max-width: 140px;
+    }
+
+    /* Panel section */
+    .panel-section { margin-bottom: var(--sp-4); }
+
+    .panel-section-title {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      margin-bottom: var(--sp-2);
+    }
+
+    /* Evidence chain */
+    .evidence-list { display: flex; flex-direction: column; gap: 2px; }
+
+    .evidence-item {
+      display: flex;
+      flex-direction: column;
+      padding: var(--sp-2) var(--sp-3);
+      background: var(--bg-elevated);
+      border-radius: 4px;
+      border-left: 2px solid var(--border-muted);
+      cursor: pointer;
+      transition: border-color 0.1s;
+    }
+
+    .evidence-item:hover { border-left-color: var(--accent); }
+    .evidence-item.triggered { border-left-color: var(--danger); }
+    .evidence-item.moderate { border-left-color: var(--warning); }
+
+    .evidence-item-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .evidence-name {
+      font-size: 12px;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .evidence-lr {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .evidence-item-detail {
+      display: none;
+      margin-top: var(--sp-1);
+      font-size: 11px;
+      color: var(--text-secondary);
+      line-height: 16px;
+    }
+
+    .evidence-item.expanded .evidence-item-detail { display: block; }
+
+    .evidence-value {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      margin-top: 2px;
+    }
+
+    .evidence-value.RED    { color: var(--danger); }
+    .evidence-value.YELLOW { color: var(--warning); }
+
+    /* Contract meta */
+    .meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-2);
+    }
+
+    .meta-item { display: flex; flex-direction: column; gap: 2px; }
+
+    .meta-label {
+      font-size: 10px;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .meta-value {
+      font-size: 12px;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+    }
+
+    /* CI visualization */
+    .ci-viz {
+      background: var(--bg-elevated);
+      border-radius: 4px;
+      padding: var(--sp-3);
+    }
+
+    .ci-bar-wrap {
+      position: relative;
+      height: 6px;
+      background: var(--bg-overlay);
+      border-radius: 3px;
+      margin: var(--sp-2) 0;
+    }
+
+    .ci-bar-range {
+      position: absolute;
+      height: 100%;
+      background: rgba(248,81,73,0.3);
+      border-radius: 3px;
+    }
+
+    .ci-bar-median {
+      position: absolute;
+      width: 2px;
+      height: 14px;
+      top: -4px;
+      background: var(--text-secondary);
+      border-radius: 1px;
+    }
+
+    .ci-bar-contract {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      top: -1px;
+      border-radius: 50%;
+      background: var(--danger);
+      transform: translateX(-50%);
+    }
+
+    .ci-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      font-family: var(--font-mono);
+      color: var(--text-tertiary);
+    }
+
+    /* Disposition actions */
+    .panel-actions {
+      padding: var(--sp-4);
+      border-top: 1px solid var(--border-default);
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-2);
+      flex-shrink: 0;
+    }
+
+    .action-row { display: flex; gap: var(--sp-2); }
+
+    .btn-action {
+      flex: 1;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 7px 12px;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    .btn-escalate {
+      background: rgba(56,139,253,0.12);
+      border: 1px solid rgba(56,139,253,0.35);
+      color: var(--accent);
+    }
+
+    .btn-escalate:hover { background: rgba(56,139,253,0.2); }
+
+    .btn-dismiss {
+      background: transparent;
+      border: 1px solid var(--border-default);
+      color: var(--text-secondary);
+    }
+
+    .btn-dismiss:hover { background: var(--bg-elevated); color: var(--text-primary); }
+
+    .btn-report {
+      width: 100%;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-default);
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 7px 12px;
+      border-radius: 4px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-2);
+    }
+
+    .btn-report:hover { background: var(--bg-overlay); color: var(--text-primary); border-color: var(--border-muted); }
+
+    /* Disposition inline form */
+    .disposition-form {
+      display: none;
+      flex-direction: column;
+      gap: var(--sp-2);
+      padding: var(--sp-3);
+      background: var(--bg-elevated);
+      border-radius: 4px;
+      border: 1px solid var(--border-default);
+    }
+
+    .disposition-form.visible { display: flex; }
+
+    .disposition-form textarea {
+      background: var(--bg-overlay);
+      border: 1px solid var(--border-default);
+      color: var(--text-primary);
+      font-size: 12px;
+      font-family: var(--font-ui);
+      padding: var(--sp-2);
+      border-radius: 3px;
+      resize: none;
+      height: 60px;
+      outline: none;
+    }
+
+    .disposition-form textarea:focus { border-color: var(--accent); }
+
+    .btn-confirm {
+      background: var(--accent);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 3px;
+      align-self: flex-end;
+    }
+
+    .btn-confirm:hover { background: #2f7de0; }
+
+    /* ============================================================
+       KPI STRIP (above table)
+       ============================================================ */
+    .kpi-strip {
+      display: flex;
+      align-items: stretch;
+      border-bottom: 1px solid var(--border-default);
+      background: var(--bg-surface);
+      flex-shrink: 0;
+    }
+
+    .kpi-item {
+      flex: 1;
+      padding: var(--sp-3) var(--sp-4);
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .kpi-item:last-child { border-right: none; }
+
+    .kpi-item-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-tertiary);
+    }
+
+    .kpi-item-value {
+      font-family: var(--font-mono);
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.1;
+    }
+
+    .kpi-item-value.red    { color: var(--danger); }
+    .kpi-item-value.yellow { color: var(--warning); }
+    .kpi-item-value.green  { color: var(--success); }
+
+    .kpi-item-sub {
+      font-size: 10px;
+      color: var(--text-tertiary);
+    }
+
+    /* ============================================================
+       KEYBOARD SHORTCUT HINT
+       ============================================================ */
+    .kbd-hint {
+      position: fixed;
+      bottom: var(--sp-4);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-overlay);
+      border: 1px solid var(--border-default);
+      border-radius: 6px;
+      padding: var(--sp-2) var(--sp-3);
+      font-size: 11px;
+      color: var(--text-tertiary);
+      display: flex;
+      gap: var(--sp-3);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 50;
+    }
+
+    .kbd-hint.show { opacity: 1; }
+
+    kbd {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-muted);
+      border-radius: 3px;
+      padding: 1px 5px;
+      color: var(--text-secondary);
+    }
+
+    /* ============================================================
+       NOTIFICATION TOAST
+       ============================================================ */
+    .toast {
+      position: fixed;
+      bottom: var(--sp-4);
+      right: var(--sp-4);
+      background: var(--bg-overlay);
+      border: 1px solid var(--border-default);
+      border-radius: 6px;
+      padding: var(--sp-3) var(--sp-4);
+      font-size: 12px;
+      color: var(--text-primary);
+      z-index: 200;
+      max-width: 300px;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-left: 3px solid var(--success); }
+    .toast.error   { border-left: 3px solid var(--danger); }
+    .toast.info    { border-left: 3px solid var(--accent); }
+
+    /* ============================================================
+       SCROLLBAR
+       ============================================================ */
+    * { scrollbar-width: thin; scrollbar-color: var(--border-muted) transparent; }
+  </style>
 </head>
 <body>
-    <!-- ============================================================ -->
-    <!-- TOP BAR                                                       -->
-    <!-- ============================================================ -->
-    <header class="topbar">
-        <div class="topbar-brand">
-            <div class="topbar-wordmark">SUN<span>LIGHT</span></div>
-            <div class="topbar-divider"></div>
-            <div class="topbar-subtitle">Procurement Fraud Detection</div>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-brand">
+    <div class="topbar-wordmark">SUN<span>LIGHT</span></div>
+    <div class="topbar-divider"></div>
+    <div class="topbar-subtitle">Procurement Fraud Detection</div>
+  </div>
+
+  <nav class="topbar-nav">
+    <a href="#" class="active">Detection Queue</a>
+    <a href="#" onclick="return false;">Cases</a>
+    <a href="#" onclick="return false;">Reports</a>
+    <a href="/docs" target="_blank">API</a>
+  </nav>
+
+  <div class="topbar-right">
+    <div class="status-indicator">
+      <div class="status-dot connecting" id="status-dot"></div>
+      <span id="status-text">Connecting…</span>
+    </div>
+    <div class="topbar-divider"></div>
+    <div class="topbar-stat">Contracts: <strong id="tb-contracts">—</strong></div>
+    <div class="topbar-stat">Scanned: <strong id="tb-scanned">—</strong></div>
+    <div class="topbar-divider"></div>
+    <button class="btn-run btn-sm" onclick="refreshData()">↻ Refresh</button>
+  </div>
+</header>
+
+<!-- SHELL -->
+<div class="shell">
+
+  <!-- LEFT RAIL -->
+  <aside class="rail">
+
+    <!-- Tier summary -->
+    <div class="rail-section">
+      <div class="rail-section-label">Risk Tier</div>
+      <div class="tier-counts">
+        <div class="tier-count-row" onclick="filterTier('RED')" id="filter-RED">
+          <div class="tier-count-left">
+            <div class="tier-pip RED"></div>
+            <span class="tier-count-label">RED</span>
+          </div>
+          <span class="tier-count-num" id="count-RED">—</span>
         </div>
-        <div class="topbar-stats">
-            <div class="topbar-stat">
-                <div id="status-dot" class="status-dot"></div>
-                <span id="status-text">Connecting...</span>
-            </div>
-            <div class="topbar-stat">
-                Contracts: <strong id="topbar-contracts">--</strong>
-            </div>
-            <div class="topbar-stat">
-                Scored: <strong id="topbar-scored">--</strong>
-            </div>
-            <div class="topbar-stat" id="topbar-time">--</div>
+        <div class="tier-count-row" onclick="filterTier('YELLOW')" id="filter-YELLOW">
+          <div class="tier-count-left">
+            <div class="tier-pip YELLOW"></div>
+            <span class="tier-count-label">YELLOW</span>
+          </div>
+          <span class="tier-count-num" id="count-YELLOW">—</span>
         </div>
-    </header>
-
-    <!-- ============================================================ -->
-    <!-- DASHBOARD BODY                                                -->
-    <!-- ============================================================ -->
-    <main class="dashboard">
-
-        <!-- KPI ROW ------------------------------------------------- -->
-        <section>
-            <div class="section-header">
-                <span class="section-title">Key Performance Indicators</span>
-            </div>
-            <div class="kpi-grid">
-                <div class="kpi-card">
-                    <div class="kpi-label">Total Contracts</div>
-                    <div class="kpi-value" id="kpi-total">--</div>
-                    <div class="kpi-delta">in database</div>
-                </div>
-                <div class="kpi-card red">
-                    <div class="kpi-label">Flagged</div>
-                    <div class="kpi-value" id="kpi-flagged">--</div>
-                    <div class="kpi-delta">RED + YELLOW</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-label">Detection Rate</div>
-                    <div class="kpi-value" id="kpi-rate">--</div>
-                    <div class="kpi-delta">flagged / total</div>
-                </div>
-                <div class="kpi-card amber">
-                    <div class="kpi-label">Avg Risk Score</div>
-                    <div class="kpi-value" id="kpi-risk">--</div>
-                    <div class="kpi-delta">across flagged</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-label">Flagged Exposure</div>
-                    <div class="kpi-value" id="kpi-exposure">--</div>
-                    <div class="kpi-delta">total award value</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- RISK DISTRIBUTION + DETECTION FEED ---------------------- -->
-        <section class="grid-3-2">
-            <!-- Detection Feed -->
-            <div class="card">
-                <div class="section-header">
-                    <span class="section-title">Detection Feed</span>
-                    <span class="section-badge" id="detection-count">0</span>
-                </div>
-                <div class="detection-table-wrap">
-                    <table class="detection-table">
-                        <thead>
-                            <tr>
-                                <th>Contract ID</th>
-                                <th>Vendor</th>
-                                <th>Agency</th>
-                                <th>Tier</th>
-                                <th>Confidence</th>
-                                <th>Markup</th>
-                                <th style="text-align:right">Award</th>
-                            </tr>
-                        </thead>
-                        <tbody id="detection-tbody">
-                            <tr>
-                                <td colspan="7" class="empty-state">
-                                    <div class="icon">&#8987;</div>
-                                    <div class="message">Loading detection data...</div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Risk Distribution Donut -->
-            <div class="card">
-                <div class="section-header">
-                    <span class="section-title">Risk Distribution</span>
-                </div>
-                <div class="donut-container">
-                    <div class="donut-chart-wrap">
-                        <canvas id="donut-chart"></canvas>
-                        <div class="donut-center-label">
-                            <span class="value" id="donut-total">--</span>
-                            <span class="label">contracts</span>
-                        </div>
-                    </div>
-                    <div class="donut-legend">
-                        <div class="legend-item" id="legend-red">
-                            <div class="legend-dot red"></div>
-                            <div class="legend-text">
-                                <div class="tier-name">RED</div>
-                                <div class="tier-detail">Prosecution-grade</div>
-                            </div>
-                            <span class="legend-count">--</span>
-                            <span class="legend-amount">--</span>
-                        </div>
-                        <div class="legend-item" id="legend-yellow">
-                            <div class="legend-dot amber"></div>
-                            <div class="legend-text">
-                                <div class="tier-name">YELLOW</div>
-                                <div class="tier-detail">Investigation-worthy</div>
-                            </div>
-                            <span class="legend-count">--</span>
-                            <span class="legend-amount">--</span>
-                        </div>
-                        <div class="legend-item" id="legend-green">
-                            <div class="legend-dot green"></div>
-                            <div class="legend-text">
-                                <div class="tier-name">GREEN</div>
-                                <div class="tier-detail">Normal pricing</div>
-                            </div>
-                            <span class="legend-count">--</span>
-                            <span class="legend-amount">--</span>
-                        </div>
-                        <div class="legend-item" id="legend-gray">
-                            <div class="legend-dot gray"></div>
-                            <div class="legend-text">
-                                <div class="tier-name">GRAY</div>
-                                <div class="tier-detail">Insufficient data</div>
-                            </div>
-                            <span class="legend-count">--</span>
-                            <span class="legend-amount">--</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- VENDOR RISK + AGENCY EXPOSURE ----------------------------- -->
-        <section class="grid-2col">
-            <div class="card">
-                <div class="section-header">
-                    <span class="section-title">Vendor Risk Ranking</span>
-                </div>
-                <div class="rank-list" id="vendor-risk-list">
-                    <div class="empty-state"><div class="message">Loading...</div></div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="section-header">
-                    <span class="section-title">Agency Exposure</span>
-                </div>
-                <div class="rank-list" id="agency-exposure-list">
-                    <div class="empty-state"><div class="message">Loading...</div></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- UPLOAD + SYSTEM HEALTH ------------------------------------ -->
-        <section class="grid-2col">
-            <!-- Upload Zone -->
-            <div class="card">
-                <div class="section-header">
-                    <span class="section-title">Contract Ingestion</span>
-                </div>
-                <div class="upload-zone" id="upload-zone">
-                    <div class="upload-icon">&#8679;</div>
-                    <div class="upload-title">Drop contract data here</div>
-                    <div class="upload-subtitle">JSON or CSV &middot; up to 50 MB &middot; scored automatically</div>
-                    <input type="file" id="upload-input" accept=".json,.csv" style="display:none">
-                    <div class="upload-progress" id="upload-progress">
-                        <div class="progress-bar">
-                            <div class="progress-bar-fill" id="progress-fill"></div>
-                        </div>
-                        <div class="upload-status" id="upload-status-text"></div>
-                    </div>
-                    <div class="upload-result" id="upload-result"></div>
-                </div>
-            </div>
-
-            <!-- System Health -->
-            <div class="card">
-                <div class="section-header">
-                    <span class="section-title">System Health</span>
-                </div>
-                <div class="health-grid">
-                    <div class="health-item">
-                        <span class="label">Audit Chain</span>
-                        <span class="value" id="health-status">--</span>
-                    </div>
-                    <div class="health-item">
-                        <span class="label">Version</span>
-                        <span class="value" id="health-version">--</span>
-                    </div>
-                    <div class="health-item">
-                        <span class="label">Database</span>
-                        <span class="value" id="health-db">--</span>
-                    </div>
-                    <div class="health-item">
-                        <span class="label">Contracts</span>
-                        <span class="value" id="health-contracts">--</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- ============================================================ -->
-    <!-- FOOTER                                                        -->
-    <!-- ============================================================ -->
-    <footer class="footer">
-        <div class="footer-text">
-            SUNLIGHT v2.0.0 &mdash; <span>Statistical anomaly detection for government procurement</span>
-            &middot; All findings are risk indicators, not allegations of fraud
+        <div class="tier-count-row" onclick="filterTier('GREEN')" id="filter-GREEN">
+          <div class="tier-count-left">
+            <div class="tier-pip GREEN"></div>
+            <span class="tier-count-label">GREEN</span>
+          </div>
+          <span class="tier-count-num" id="count-GREEN">—</span>
         </div>
-    </footer>
+        <div class="tier-count-row" onclick="filterTier('GRAY')" id="filter-GRAY">
+          <div class="tier-count-left">
+            <div class="tier-pip GRAY"></div>
+            <span class="tier-count-label">GRAY</span>
+          </div>
+          <span class="tier-count-num" id="count-GRAY">—</span>
+        </div>
+        <div class="tier-count-row" onclick="filterTier(null)" id="filter-ALL" style="margin-top:4px">
+          <div class="tier-count-left">
+            <div class="tier-pip" style="background:var(--border-muted)"></div>
+            <span class="tier-count-label">All</span>
+          </div>
+          <span class="tier-count-num" id="count-ALL">—</span>
+        </div>
+      </div>
+    </div>
 
-    <script src="/static/js/dashboard.js"></script>
+    <!-- Filters -->
+    <div class="rail-section">
+      <div class="rail-section-label">Filters</div>
+
+      <div class="filter-group">
+        <label class="filter-label">Buyer / Agency</label>
+        <select class="filter-select" id="filter-buyer" onchange="applyFilters()">
+          <option value="">All buyers</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Min Score</label>
+        <input type="number" class="filter-input" id="filter-score-min" min="0" max="1" step="0.01" placeholder="0.00" oninput="applyFilters()">
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Case Status</label>
+        <select class="filter-select" id="filter-status" onchange="applyFilters()">
+          <option value="">All statuses</option>
+          <option value="OPEN">Open</option>
+          <option value="REVIEWED">Reviewed</option>
+          <option value="ESCALATED">Escalated</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Sort -->
+    <div class="rail-section">
+      <div class="rail-section-label">Sort By</div>
+      <div class="sort-options">
+        <div class="sort-option active" onclick="setSort('score')" id="sort-score">
+          <div class="sort-radio active" id="sr-score"></div>
+          Score (high → low)
+        </div>
+        <div class="sort-option" onclick="setSort('value')" id="sort-value">
+          <div class="sort-radio" id="sr-value"></div>
+          Contract value
+        </div>
+        <div class="sort-option" onclick="setSort('date')" id="sort-date">
+          <div class="sort-radio" id="sr-date"></div>
+          Date (recent first)
+        </div>
+      </div>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="rail-section" style="margin-top:auto">
+      <div style="font-size:10px; color:var(--text-tertiary); line-height:15px; font-style:italic;">
+        All outputs are risk indicators, not allegations. Statistical anomaly detection calibrated to DOJ prosecution standards. Human investigation required before action.
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- WORKSPACE -->
+  <main class="workspace">
+
+    <!-- KPI strip -->
+    <div class="kpi-strip">
+      <div class="kpi-item">
+        <div class="kpi-item-label">Total Contracts</div>
+        <div class="kpi-item-value" id="kpi-total">—</div>
+        <div class="kpi-item-sub">in database</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-item-label">Flagged</div>
+        <div class="kpi-item-value red" id="kpi-flagged">—</div>
+        <div class="kpi-item-sub">RED + YELLOW</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-item-label">Detection Rate</div>
+        <div class="kpi-item-value" id="kpi-rate">—</div>
+        <div class="kpi-item-sub">flagged / total</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-item-label">Avg Risk Score</div>
+        <div class="kpi-item-value yellow" id="kpi-avg">—</div>
+        <div class="kpi-item-sub">across flagged</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-item-label">Flagged Exposure</div>
+        <div class="kpi-item-value" id="kpi-exposure">—</div>
+        <div class="kpi-item-sub">total award value</div>
+      </div>
+    </div>
+
+    <!-- Table header bar -->
+    <div class="table-header-bar">
+      <span class="table-title">Detection Queue</span>
+      <span class="table-count-badge" id="table-count">0</span>
+      <input type="text" class="table-search" id="search-input" placeholder="Search contract ID, vendor, agency…" oninput="applyFilters()">
+      <div class="table-actions-right">
+        <button class="btn-sm btn-ghost" onclick="exportCSV()">↓ Export</button>
+      </div>
+    </div>
+
+    <!-- Bulk bar -->
+    <div class="bulk-bar" id="bulk-bar">
+      <span class="bulk-bar-count" id="bulk-count">0 selected</span>
+      <button class="btn-sm btn-ghost" onclick="bulkEscalate()">Escalate Selected</button>
+      <button class="btn-sm btn-ghost" onclick="bulkExport()">Export Selected</button>
+      <button class="btn-sm btn-ghost" onclick="clearSelection()">✕ Clear</button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <table class="data-table" id="data-table">
+        <thead>
+          <tr>
+            <th class="col-tier" onclick="sortBy('tier')">Tier <span class="sort-arrow" id="th-tier">↕</span></th>
+            <th class="col-id" onclick="sortBy('contract_id')">Contract ID <span class="sort-arrow" id="th-contract_id">↕</span></th>
+            <th class="col-vendor" onclick="sortBy('vendor')">Vendor <span class="sort-arrow" id="th-vendor">↕</span></th>
+            <th class="col-buyer" onclick="sortBy('buyer')">Buyer / Agency <span class="sort-arrow" id="th-buyer">↕</span></th>
+            <th class="col-value" onclick="sortBy('value')" style="text-align:right">Value <span class="sort-arrow" id="th-value">↕</span></th>
+            <th class="col-score" onclick="sortBy('score')" style="text-align:right">Score <span class="sort-arrow" id="th-score">↕</span></th>
+            <th class="col-flags" style="text-align:center">Flags</th>
+            <th class="col-date" onclick="sortBy('date')">Date <span class="sort-arrow" id="th-date">↕</span></th>
+            <th class="col-status">Status</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+          <tr class="loading-row"><td colspan="9"><span class="loading-text">Loading detection data…</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- RIGHT CONTEXT PANEL -->
+  <aside class="context-panel" id="context-panel">
+
+    <div class="panel-topbar">
+      <span class="panel-contract-id" id="panel-contract-id">—</span>
+      <button class="panel-close" onclick="closePanel()">✕</button>
+    </div>
+
+    <div class="panel-body" id="panel-body">
+      <!-- Tier header -->
+      <div class="panel-tier-header">
+        <div>
+          <div class="panel-tier-badge RED" id="panel-tier-badge">RED</div>
+        </div>
+        <div class="panel-score-block">
+          <div class="panel-score-num RED" id="panel-score">0.00</div>
+          <div class="panel-score-label">Bayesian posterior</div>
+        </div>
+        <div class="panel-disclaimer">
+          <div class="panel-disclaimer-text">Risk indicator — not an allegation. Investigation required.</div>
+        </div>
+      </div>
+
+      <!-- Contract meta -->
+      <div class="panel-section">
+        <div class="panel-section-title">Contract Details</div>
+        <div class="meta-grid">
+          <div class="meta-item">
+            <span class="meta-label">Vendor</span>
+            <span class="meta-value" id="panel-vendor">—</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Buyer</span>
+            <span class="meta-value" id="panel-buyer">—</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Award Value</span>
+            <span class="meta-value" id="panel-value">—</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Date</span>
+            <span class="meta-value" id="panel-date">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Price deviation CI visualization -->
+      <div class="panel-section" id="ci-section">
+        <div class="panel-section-title">Price Deviation Analysis</div>
+        <div class="ci-viz">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <span style="font-size:11px;color:var(--text-secondary)">vs. peer contracts</span>
+            <span class="evidence-value RED" id="panel-markup">+—%</span>
+          </div>
+          <div class="ci-bar-wrap">
+            <div class="ci-bar-range" id="ci-bar-range" style="left:15%;width:35%"></div>
+            <div class="ci-bar-median" id="ci-bar-median" style="left:30%"></div>
+            <div class="ci-bar-contract" id="ci-bar-contract" style="left:72%"></div>
+          </div>
+          <div class="ci-labels">
+            <span>min</span>
+            <span id="ci-label-median">median</span>
+            <span>max</span>
+          </div>
+          <div style="margin-top:6px;font-size:10px;color:var(--text-tertiary)">
+            Bootstrap 95% CI: <span class="evidence-value RED" id="panel-ci" style="font-size:10px">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Evidence chain -->
+      <div class="panel-section">
+        <div class="panel-section-title">Evidence Chain</div>
+        <div class="evidence-list" id="evidence-list">
+          <div style="font-size:12px;color:var(--text-tertiary)">Select a contract to view evidence.</div>
+        </div>
+      </div>
+
+      <!-- Methodology note -->
+      <div class="panel-section">
+        <div class="panel-section-title">Detection Methodology</div>
+        <div style="font-size:11px;color:var(--text-tertiary);line-height:16px;">
+          Bootstrap confidence intervals (10,000 resamples) · Bayesian posterior with conservative 2–5% fraud prior · Benjamini-Hochberg FDR correction · Thresholds calibrated to DOJ prosecution standards.
+        </div>
+      </div>
+
+      <!-- Case status timeline -->
+      <div class="panel-section">
+        <div class="panel-section-title">Case Status</div>
+        <div id="case-timeline" style="font-size:11px;color:var(--text-tertiary);">
+          <span>OPEN — no actions recorded</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Disposition actions -->
+    <div class="panel-actions">
+
+      <div class="disposition-form" id="escalate-form">
+        <div style="font-size:11px;color:var(--text-secondary);font-weight:500;">Escalation note</div>
+        <textarea id="escalate-note" placeholder="Reason for escalation…"></textarea>
+        <button class="btn-confirm" onclick="confirmEscalate()">Confirm Escalation</button>
+      </div>
+
+      <div class="action-row">
+        <button class="btn-action btn-escalate" onclick="toggleEscalateForm()">↑ Escalate</button>
+        <button class="btn-action btn-dismiss" onclick="markReviewed()">✓ Mark Reviewed</button>
+      </div>
+
+      <button class="btn-report" onclick="openReport()">
+        <span>⬡</span> Open Full Detection Report
+      </button>
+
+    </div>
+  </aside>
+
+</div><!-- end .shell -->
+
+<!-- Keyboard hint -->
+<div class="kbd-hint" id="kbd-hint">
+  <span><kbd>↑↓</kbd> navigate</span>
+  <span><kbd>Enter</kbd> open report</span>
+  <span><kbd>Esc</kbd> close panel</span>
+  <span><kbd>E</kbd> escalate</span>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  /* ============================================================
+     STATE
+     ============================================================ */
+  let allContracts = [];
+  let filteredContracts = [];
+  let selectedRow = null;
+  let activeContract = null;
+  let selectedIds = new Set();
+  let currentSort = { field: 'score', dir: -1 };
+  let activeTierFilter = null;
+
+  /* ============================================================
+     INIT
+     ============================================================ */
+  document.addEventListener('DOMContentLoaded', () => {
+    loadData();
+    setupKeyboard();
+    // Show kbd hint briefly on load
+    setTimeout(() => {
+      const h = document.getElementById('kbd-hint');
+      h.classList.add('show');
+      setTimeout(() => h.classList.remove('show'), 3000);
+    }, 2000);
+  });
+
+  /* ============================================================
+     DATA LOADING
+     ============================================================ */
+  async function loadData() {
+    await Promise.all([loadHealth(), loadContracts()]);
+  }
+
+  async function loadHealth() {
+    try {
+      const r = await fetch('/dashboard/api/health');
+      if (!r.ok) throw new Error();
+      const d = await r.json();
+      document.getElementById('status-dot').className = 'status-dot';
+      document.getElementById('status-text').textContent = 'System operational';
+      if (d.total_contracts !== undefined) {
+        document.getElementById('tb-contracts').textContent = fmt(d.total_contracts);
+      }
+      if (d.total_scored !== undefined) {
+        document.getElementById('tb-scanned').textContent = fmt(d.total_scored);
+      }
+    } catch {
+      document.getElementById('status-dot').className = 'status-dot error';
+      document.getElementById('status-text').textContent = 'Connection error';
+    }
+  }
+
+  async function loadContracts() {
+    try {
+      const r = await fetch('/dashboard/api/triage?limit=2000');
+      if (!r.ok) throw new Error('API error');
+      const d = await r.json();
+      const items = d.items || d.results || d.contracts || d || [];
+      allContracts = Array.isArray(items) ? items : [];
+      buildBuyerFilter();
+      computeKPIs();
+      applyFilters();
+    } catch(e) {
+      console.error(e);
+      // Try fallback endpoint
+      try {
+        const r2 = await fetch('/dashboard/api/scores?limit=2000');
+        if (!r2.ok) throw new Error();
+        const d2 = await r2.json();
+        allContracts = d2.items || d2.results || d2 || [];
+        buildBuyerFilter();
+        computeKPIs();
+        applyFilters();
+      } catch {
+        document.getElementById('table-body').innerHTML =
+          '<tr class="empty-row"><td colspan="9">Unable to load contract data. Check API connection.</td></tr>';
+      }
+    }
+  }
+
+  function refreshData() {
+    document.getElementById('table-body').innerHTML =
+      '<tr class="loading-row"><td colspan="9"><span class="loading-text">Refreshing…</span></td></tr>';
+    loadData();
+    showToast('Refreshing detection data…', 'info');
+  }
+
+  /* ============================================================
+     KPIs
+     ============================================================ */
+  function computeKPIs() {
+    const total = allContracts.length;
+    const flagged = allContracts.filter(c => ['RED','YELLOW'].includes(tier(c))).length;
+    const rate = total > 0 ? (flagged / total * 100).toFixed(1) + '%' : '—';
+    const flaggedContracts = allContracts.filter(c => ['RED','YELLOW'].includes(tier(c)));
+    const scores = flaggedContracts.map(c => score(c)).filter(s => !isNaN(s));
+    const avgScore = scores.length > 0 ? (scores.reduce((a,b) => a+b, 0) / scores.length).toFixed(3) : '—';
+    const exposure = flaggedContracts.reduce((s, c) => s + (value(c) || 0), 0);
+
+    document.getElementById('kpi-total').textContent   = fmt(total);
+    document.getElementById('kpi-flagged').textContent = fmt(flagged);
+    document.getElementById('kpi-rate').textContent    = rate;
+    document.getElementById('kpi-avg').textContent     = avgScore;
+    document.getElementById('kpi-exposure').textContent = fmtMoney(exposure);
+
+    // Tier counts
+    const counts = { RED:0, YELLOW:0, GREEN:0, GRAY:0 };
+    allContracts.forEach(c => { const t = tier(c); if (counts[t] !== undefined) counts[t]++; });
+    Object.keys(counts).forEach(t => {
+      document.getElementById('count-' + t).textContent = fmt(counts[t]);
+    });
+    document.getElementById('count-ALL').textContent = fmt(total);
+
+    // Topbar
+    document.getElementById('tb-contracts').textContent = fmt(total);
+    document.getElementById('tb-scanned').textContent = fmt(allContracts.filter(c => score(c) !== null).length);
+  }
+
+  /* ============================================================
+     FILTERS & SORT
+     ============================================================ */
+  function buildBuyerFilter() {
+    const buyers = [...new Set(allContracts.map(c => buyer(c)).filter(Boolean))].sort();
+    const sel = document.getElementById('filter-buyer');
+    sel.innerHTML = '<option value="">All buyers</option>';
+    buyers.forEach(b => {
+      const o = document.createElement('option');
+      o.value = b; o.textContent = b.length > 28 ? b.slice(0,28)+'…' : b;
+      sel.appendChild(o);
+    });
+  }
+
+  function filterTier(t) {
+    activeTierFilter = t;
+    ['RED','YELLOW','GREEN','GRAY','ALL'].forEach(k => {
+      const el = document.getElementById('filter-' + k);
+      if (el) el.classList.remove('active');
+    });
+    const key = t || 'ALL';
+    const el = document.getElementById('filter-' + key);
+    if (el) el.classList.add('active');
+    applyFilters();
+  }
+
+  function applyFilters() {
+    const searchQ = (document.getElementById('search-input').value || '').toLowerCase();
+    const buyerQ  = document.getElementById('filter-buyer').value;
+    const scoreMin= parseFloat(document.getElementById('filter-score-min').value) || 0;
+    const statusQ = document.getElementById('filter-status').value;
+
+    filteredContracts = allContracts.filter(c => {
+      if (activeTierFilter && tier(c) !== activeTierFilter) return false;
+      if (buyerQ && buyer(c) !== buyerQ) return false;
+      if (score(c) < scoreMin) return false;
+      if (statusQ && (c.status || 'OPEN') !== statusQ) return false;
+      if (searchQ) {
+        const haystack = [contractId(c), vendor(c), buyer(c)].join(' ').toLowerCase();
+        if (!haystack.includes(searchQ)) return false;
+      }
+      return true;
+    });
+
+    sortContracts();
+    renderTable();
+  }
+
+  function setSort(field) {
+    currentSort = { field, dir: -1 };
+    ['score','value','date'].forEach(f => {
+      document.getElementById('sort-' + f).classList.remove('active');
+      document.getElementById('sr-' + f).classList.remove('active');
+    });
+    document.getElementById('sort-' + field).classList.add('active');
+    document.getElementById('sr-' + field).classList.add('active');
+    applyFilters();
+  }
+
+  function sortBy(field) {
+    if (currentSort.field === field) { currentSort.dir *= -1; }
+    else { currentSort = { field, dir: -1 }; }
+    document.querySelectorAll('.sort-arrow').forEach(a => { a.classList.remove('active'); a.textContent = '↕'; });
+    const arrow = document.getElementById('th-' + field);
+    if (arrow) { arrow.classList.add('active'); arrow.textContent = currentSort.dir === -1 ? '↓' : '↑'; }
+    sortContracts();
+    renderTable();
+  }
+
+  function sortContracts() {
+    const { field, dir } = currentSort;
+    filteredContracts.sort((a, b) => {
+      let va, vb;
+      if (field === 'score') { va = score(a) || 0; vb = score(b) || 0; }
+      else if (field === 'value') { va = value(a) || 0; vb = value(b) || 0; }
+      else if (field === 'date') { va = new Date(date(a) || 0).getTime(); vb = new Date(date(b) || 0).getTime(); }
+      else if (field === 'vendor') { va = vendor(a); vb = vendor(b); return dir * va.localeCompare(vb); }
+      else if (field === 'buyer') { va = buyer(a); vb = buyer(b); return dir * va.localeCompare(vb); }
+      else if (field === 'contract_id') { va = contractId(a); vb = contractId(b); return dir * va.localeCompare(vb); }
+      else if (field === 'tier') {
+        const order = { RED:0, YELLOW:1, GRAY:2, GREEN:3 };
+        va = order[tier(a)] ?? 4; vb = order[tier(b)] ?? 4;
+      }
+      else { return 0; }
+      return dir * (vb - va);
+    });
+  }
+
+  /* ============================================================
+     TABLE RENDER
+     ============================================================ */
+  function renderTable() {
+    const tbody = document.getElementById('table-body');
+    document.getElementById('table-count').textContent = filteredContracts.length;
+
+    if (filteredContracts.length === 0) {
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="9">No contracts match current filters.</td></tr>';
+      return;
+    }
+
+    const rows = filteredContracts.map((c, i) => {
+      const t = tier(c);
+      const s = score(c);
+      const v = value(c);
+      const id = contractId(c);
+      const vend = vendor(c);
+      const buy  = buyer(c);
+      const dt   = date(c);
+      const flags = flagCount(c);
+      const status = c.status || 'OPEN';
+      const isSelected = selectedIds.has(id);
+
+      return `<tr
+        class="tier-${t}${isSelected ? ' selected' : ''}"
+        data-id="${id}"
+        data-idx="${i}"
+        onclick="selectRow(${i}, '${id}', event)"
+        tabindex="0"
+        onkeydown="rowKeydown(event, ${i})">
+        <td><span class="tier-badge ${t}">${t}</span></td>
+        <td><span class="contract-id">${escHtml(id)}</span></td>
+        <td title="${escHtml(vend)}">${escHtml(trunc(vend, 24))}</td>
+        <td title="${escHtml(buy)}">${escHtml(trunc(buy, 22))}</td>
+        <td class="value-cell" style="text-align:right">${fmtMoneyShort(v)}</td>
+        <td style="text-align:right"><span class="score-val ${t}">${s !== null ? s.toFixed(4) : '—'}</span></td>
+        <td style="text-align:center"><span class="flags-count ${flags > 0 ? 'has-flags' : ''}">${flags}</span></td>
+        <td class="date-cell">${dt ? dt.slice(0,10) : '—'}</td>
+        <td><span class="status-badge ${status.toLowerCase()}">${status}</span></td>
+      </tr>`;
+    }).join('');
+
+    tbody.innerHTML = rows;
+  }
+
+  /* ============================================================
+     ROW SELECTION & PANEL
+     ============================================================ */
+  let focusedIdx = -1;
+
+  function selectRow(idx, id, event) {
+    // Checkbox area (leftmost 24px) = multi-select toggle
+    if (event && event.offsetX < 24 && event.target.tagName === 'TD') {
+      toggleSelect(id);
+      return;
+    }
+
+    focusedIdx = idx;
+    const c = filteredContracts[idx];
+    if (!c) return;
+
+    // Highlight active
+    document.querySelectorAll('.data-table tbody tr').forEach(r => r.classList.remove('active-row'));
+    const rows = document.querySelectorAll('.data-table tbody tr');
+    if (rows[idx]) rows[idx].classList.add('active-row');
+
+    openPanel(c);
+  }
+
+  function rowKeydown(event, idx) {
+    if (event.key === 'Enter') { openReport(); }
+  }
+
+  function toggleSelect(id) {
+    if (selectedIds.has(id)) { selectedIds.delete(id); }
+    else { selectedIds.add(id); }
+    updateBulkBar();
+    renderTable();
+  }
+
+  function updateBulkBar() {
+    const bar = document.getElementById('bulk-bar');
+    const count = document.getElementById('bulk-count');
+    if (selectedIds.size > 0) {
+      bar.classList.add('visible');
+      count.textContent = selectedIds.size + ' selected';
+    } else {
+      bar.classList.remove('visible');
+    }
+  }
+
+  function clearSelection() {
+    selectedIds.clear();
+    updateBulkBar();
+    renderTable();
+  }
+
+  function openPanel(c) {
+    activeContract = c;
+    const t = tier(c);
+    const s = score(c);
+    const v = value(c);
+    const id = contractId(c);
+
+    document.getElementById('panel-contract-id').textContent = id;
+    document.getElementById('context-panel').classList.add('open');
+
+    // Tier badge
+    const badge = document.getElementById('panel-tier-badge');
+    badge.className = 'panel-tier-badge ' + t;
+    badge.textContent = t === 'GRAY' ? 'GRAY — Insufficient Data' : t;
+
+    // Score
+    const scoreEl = document.getElementById('panel-score');
+    scoreEl.className = 'panel-score-num ' + t;
+    scoreEl.textContent = s !== null ? s.toFixed(4) : '—';
+
+    // Meta
+    document.getElementById('panel-vendor').textContent = vendor(c) || '—';
+    document.getElementById('panel-buyer').textContent = buyer(c) || '—';
+    document.getElementById('panel-value').textContent = v ? '$' + v.toLocaleString() : '—';
+    document.getElementById('panel-date').textContent = (date(c) || '—').slice(0,10);
+
+    // Markup
+    const markup = c.price_markup || c.markup_pct || c.price_deviation_pct || null;
+    document.getElementById('panel-markup').textContent = markup !== null ? (markup > 0 ? '+' : '') + markup.toFixed(1) + '%' : '—';
+
+    // CI visualization
+    const ciLow  = c.ci_lower || c.bootstrap_ci_lower || 0.1;
+    const ciHigh = c.ci_upper || c.bootstrap_ci_upper || 0.9;
+    const medianPos = 40;
+    const contractPos = Math.min(95, Math.max(5, 40 + (markup || 0) * 0.4));
+    document.getElementById('ci-bar-range').style.left    = (ciLow * 100) + '%';
+    document.getElementById('ci-bar-range').style.width   = ((ciHigh - ciLow) * 100) + '%';
+    document.getElementById('ci-bar-median').style.left   = medianPos + '%';
+    document.getElementById('ci-bar-contract').style.left = contractPos + '%';
+    document.getElementById('panel-ci').textContent = ciLow && ciHigh ?
+      '[' + (ciLow * 100).toFixed(1) + '%, ' + (ciHigh * 100).toFixed(1) + '%]' : '—';
+
+    // Evidence chain
+    renderEvidence(c);
+
+    // Reset disposition form
+    document.getElementById('escalate-form').classList.remove('visible');
+    document.getElementById('escalate-note').value = '';
+
+    // Case status
+    const status = c.status || 'OPEN';
+    document.getElementById('case-timeline').innerHTML =
+      `<span class="status-badge ${status.toLowerCase()}">${status}</span>`;
+  }
+
+  function renderEvidence(c) {
+    const list = document.getElementById('evidence-list');
+    const indicators = c.cri_indicators || c.indicators || c.flags || [];
+
+    if (!indicators || indicators.length === 0) {
+      // Try to build evidence from available fields
+      const items = [];
+      if (c.price_markup || c.markup_pct) {
+        const m = c.price_markup || c.markup_pct;
+        items.push({ name: 'Price Deviation', lr: c.price_lr || '—', value: (m > 0 ? '+' : '') + m.toFixed(1) + '%', severity: Math.abs(m) > 30 ? 'triggered' : 'moderate' });
+      }
+      if (c.vendor_flag || c.vendor_history_flags) {
+        items.push({ name: 'Vendor History', lr: c.vendor_lr || '—', value: 'Prior flags detected', severity: 'triggered' });
+      }
+      if (c.timing_flag) {
+        items.push({ name: 'Timing Anomaly', lr: c.timing_lr || '—', value: 'End-of-period clustering', severity: 'moderate' });
+      }
+      if (c.concentration_flag) {
+        items.push({ name: 'Buyer Concentration', lr: c.concentration_lr || '—', value: 'Abnormal vendor concentration', severity: 'moderate' });
+      }
+
+      if (items.length === 0) {
+        list.innerHTML = '<div style="font-size:12px;color:var(--text-tertiary)">No detailed indicators available for this contract.</div>';
+        return;
+      }
+
+      list.innerHTML = items.map(item => `
+        <div class="evidence-item ${item.severity}" onclick="this.classList.toggle('expanded')">
+          <div class="evidence-item-top">
+            <span class="evidence-name">${escHtml(item.name)}</span>
+            <span class="evidence-lr">LR: ${item.lr}</span>
+          </div>
+          <div class="evidence-item-detail">
+            <div class="evidence-value ${item.severity === 'triggered' ? 'RED' : 'YELLOW'}">${escHtml(item.value)}</div>
+            <div style="margin-top:2px;color:var(--text-tertiary)">Click to expand methodology detail.</div>
+          </div>
+        </div>`).join('');
+      return;
+    }
+
+    list.innerHTML = indicators.map(ind => {
+      const sev = ind.triggered ? 'triggered' : ind.lr > 2 ? 'moderate' : '';
+      return `
+        <div class="evidence-item ${sev}" onclick="this.classList.toggle('expanded')">
+          <div class="evidence-item-top">
+            <span class="evidence-name">${escHtml(ind.name || ind.type || ind.indicator_name || '—')}</span>
+            <span class="evidence-lr">LR: ${typeof ind.lr === 'number' ? ind.lr.toFixed(2) : (ind.lr || '—')}</span>
+          </div>
+          <div class="evidence-item-detail">
+            <div class="evidence-value ${sev === 'triggered' ? 'RED' : 'YELLOW'}">${escHtml(String(ind.value || ind.detail || ind.description || '—'))}</div>
+            <div style="margin-top:2px;font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary)">
+              Threshold: ${ind.threshold || '—'} · p-value: ${ind.p_value !== undefined ? ind.p_value.toFixed(4) : '—'}
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function closePanel() {
+    document.getElementById('context-panel').classList.remove('open');
+    activeContract = null;
+    document.querySelectorAll('.data-table tbody tr').forEach(r => r.classList.remove('active-row'));
+  }
+
+  /* ============================================================
+     DISPOSITION ACTIONS
+     ============================================================ */
+  function toggleEscalateForm() {
+    const form = document.getElementById('escalate-form');
+    form.classList.toggle('visible');
+    if (form.classList.contains('visible')) {
+      document.getElementById('escalate-note').focus();
+    }
+  }
+
+  function confirmEscalate() {
+    if (!activeContract) return;
+    const note = document.getElementById('escalate-note').value.trim();
+    activeContract.status = 'ESCALATED';
+    document.getElementById('escalate-form').classList.remove('visible');
+    document.getElementById('case-timeline').innerHTML =
+      '<span class="status-badge escalated">ESCALATED</span> — ' +
+      '<span style="font-size:10px;color:var(--text-tertiary)">' + new Date().toISOString().slice(0,16).replace('T',' ') + '</span>';
+    showToast('Case escalated successfully.', 'success');
+    renderTable();
+  }
+
+  function markReviewed() {
+    if (!activeContract) return;
+    activeContract.status = 'REVIEWED';
+    document.getElementById('case-timeline').innerHTML =
+      '<span class="status-badge reviewed">REVIEWED</span> — ' +
+      '<span style="font-size:10px;color:var(--text-tertiary)">' + new Date().toISOString().slice(0,16).replace('T',' ') + '</span>';
+    showToast('Marked as reviewed.', 'success');
+    renderTable();
+  }
+
+  function openReport() {
+    if (!activeContract) return;
+    const id = contractId(activeContract);
+    window.open('/reports/detection/' + id, '_blank');
+  }
+
+  function bulkEscalate() {
+    selectedIds.forEach(id => {
+      const c = allContracts.find(x => contractId(x) === id);
+      if (c) c.status = 'ESCALATED';
+    });
+    showToast(selectedIds.size + ' cases escalated.', 'success');
+    clearSelection();
+    renderTable();
+  }
+
+  function bulkExport() {
+    const selected = allContracts.filter(c => selectedIds.has(contractId(c)));
+    exportContractsCSV(selected);
+  }
+
+  function exportCSV() { exportContractsCSV(filteredContracts); }
+
+  function exportContractsCSV(contracts) {
+    const headers = ['Contract ID','Vendor','Buyer','Value','Tier','Score','Flags','Date','Status'];
+    const rows = contracts.map(c => [
+      contractId(c), vendor(c), buyer(c), value(c), tier(c), score(c), flagCount(c), date(c), c.status||'OPEN'
+    ].map(v => '"' + String(v||'').replace(/"/g,'""') + '"'));
+    const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'sunlight_detection_' + new Date().toISOString().slice(0,10) + '.csv';
+    a.click(); URL.revokeObjectURL(url);
+    showToast('Exported ' + contracts.length + ' contracts.', 'success');
+  }
+
+  /* ============================================================
+     KEYBOARD NAV
+     ============================================================ */
+  function setupKeyboard() {
+    document.addEventListener('keydown', e => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+
+      if (e.key === 'Escape') { closePanel(); return; }
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        const dir = e.key === 'ArrowDown' ? 1 : -1;
+        const newIdx = Math.max(0, Math.min(filteredContracts.length - 1, focusedIdx + dir));
+        if (newIdx !== focusedIdx && filteredContracts[newIdx]) {
+          focusedIdx = newIdx;
+          openPanel(filteredContracts[newIdx]);
+          document.querySelectorAll('.data-table tbody tr').forEach((r, i) => {
+            r.classList.toggle('active-row', i === newIdx);
+          });
+          // Scroll row into view
+          const rows = document.querySelectorAll('.data-table tbody tr');
+          if (rows[newIdx]) rows[newIdx].scrollIntoView({ block: 'nearest' });
+        }
+        return;
+      }
+      if (e.key === 'Enter' && activeContract) { openReport(); return; }
+      if ((e.key === 'e' || e.key === 'E') && activeContract) { toggleEscalateForm(); return; }
+      if ((e.key === 'r' || e.key === 'R') && activeContract) { markReviewed(); return; }
+      if (e.key === '/') {
+        e.preventDefault();
+        document.getElementById('search-input').focus();
+      }
+    });
+  }
+
+  /* ============================================================
+     TOAST
+     ============================================================ */
+  let toastTimer = null;
+  function showToast(msg, type = 'info') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'toast ' + type + ' show';
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+  }
+
+  /* ============================================================
+     DATA ACCESSORS (handles varied API response shapes)
+     ============================================================ */
+  function tier(c)       { return c.tier || c.risk_tier || c.risk_level || 'GRAY'; }
+  function score(c)      { return c.fraud_probability ?? c.score ?? c.risk_score ?? c.bayesian_posterior ?? null; }
+  function value(c)      { return c.award_value ?? c.contract_value ?? c.value ?? c.amount ?? null; }
+  function vendor(c)     { return c.vendor_name || c.vendor || c.supplier || '—'; }
+  function buyer(c)      { return c.buyer || c.buyer_name || c.agency || c.contracting_authority || '—'; }
+  function date(c)       { return c.award_date || c.date || c.contract_date || '—'; }
+  function contractId(c) { return c.contract_id || c.id || c.ocid || c.reference || String(Math.random()); }
+  function flagCount(c)  { return (c.flags || c.cri_indicators || c.indicators || []).length; }
+
+  /* ============================================================
+     FORMAT HELPERS
+     ============================================================ */
+  function fmt(n) { return n !== undefined && n !== null ? Number(n).toLocaleString() : '—'; }
+  function fmtMoney(n) {
+    if (!n) return '—';
+    if (n >= 1e9) return '$' + (n/1e9).toFixed(1) + 'B';
+    if (n >= 1e6) return '$' + (n/1e6).toFixed(1) + 'M';
+    if (n >= 1e3) return '$' + (n/1e3).toFixed(0) + 'K';
+    return '$' + n.toLocaleString();
+  }
+  function fmtMoneyShort(n) { return n ? fmtMoney(n) : '—'; }
+  function trunc(s, n) { return s && s.length > n ? s.slice(0,n) + '…' : (s || '—'); }
+  function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+</script>
 </body>
 </html>
