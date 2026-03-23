@@ -44,6 +44,68 @@ def _is_it(desc):
     lower = (desc or '').lower()
     return any(x in lower for x in ['it ','technology','software','computer'])
 
+
+def _compute_tca_for_score(contract, comparables):
+    """Compute TCA topological contradiction score for a contract.
+
+    Returns (tca_risk_score, tca_likelihood_ratio, tca_details).
+    Uses the standalone TCA engine via tca_procurement to model procurement
+    as a typed graph and find structural contradictions.
+    """
+    try:
+        from tca_procurement import tca_score_for_pipeline, classify_procurement
+        risk, lr, details = tca_score_for_pipeline(contract, comparables)
+        # Enrich with classify_procurement structural verdict
+        classification = classify_procurement(contract, comparables)
+        details['tca_classification'] = classification['verdict']
+        details['tca_flags'] = classification['flags']
+        details['tca_flag_count'] = classification['flag_count']
+        return risk, lr, details
+    except Exception as e:
+        logger.debug("TCA scoring unavailable", extra={"error": str(e)})
+        return 0.0, 1.0, {}
+
+
+def _compute_cri_for_score(contract):
+    """Compute CRI indicators from available contract metadata.
+
+    Returns (CRIResult, combined_likelihood_ratio). When contract lacks
+    OCDS metadata, most indicators return GRAY and CRI is indeterminate.
+    """
+    from cri_indicators import (
+        single_bidding, tender_period_risk, procedure_type_risk,
+        decision_period_risk, amendment_risk, compute_cri,
+        combined_likelihood_ratio,
+    )
+
+    pm = contract.get('procurement_method')
+    if pm is None and contract.get('is_sole_source'):
+        pm = 'direct'
+
+    indicators = [
+        procedure_type_risk(pm),
+        single_bidding(
+            number_of_tenderers=contract.get('num_offers'),
+            procurement_method=pm,
+        ),
+        tender_period_risk(
+            tender_period_days=contract.get('tender_period_days'),
+        ),
+        decision_period_risk(
+            decision_period_days=contract.get('decision_period_days'),
+        ),
+        amendment_risk(
+            amendment_count=contract.get('amendment_count', 0),
+            original_value=contract.get('original_value'),
+            final_value=contract.get('final_value'),
+        ),
+    ]
+
+    cri = compute_cri(indicators)
+    lr = combined_likelihood_ratio(indicators)
+    return cri, lr
+
+
 def select_comparables_from_cache(contract_id, agency, amount, agency_cache):
     amounts = agency_cache.get(agency, [])
     # Exclude self
@@ -72,6 +134,24 @@ def score_contract(contract, seed, config, bootstrap_analyzer, calibration_profi
             'raw_zscore': None, 'log_zscore': None, 'bootstrap_percentile': None,
             'percentile_ci_lower': None, 'percentile_ci_upper': None,
             'bayesian_prior': None, 'bayesian_likelihood_ratio': None, 'bayesian_posterior': None})
+        # CRI runs independently of price comparables
+        cri, cri_lr = _compute_cri_for_score(contract)
+        result.update({
+            'cri_score': cri.cri_score, 'cri_tier': cri.tier,
+            'cri_n_flagged': cri.n_indicators_flagged, 'cri_n_available': cri.n_indicators_available,
+            'cri_likelihood_ratio': round(cri_lr, 4),
+        })
+        # TCA runs independently of price comparables — uses topology
+        tca_risk, tca_lr, tca_details = _compute_tca_for_score(contract, [])
+        result.update({
+            'tca_risk_score': tca_risk, 'tca_likelihood_ratio': round(tca_lr, 4),
+            'tca_contradiction_count': tca_details.get('contradiction_count', 0),
+            'tca_verdict': tca_details.get('verdict', ''),
+        })
+        sel = json.loads(result.get('selection_params_json', '{}'))
+        sel['cri'] = {'score': cri.cri_score, 'tier': cri.tier, 'lr': round(cri_lr, 4)}
+        sel['tca'] = tca_details
+        result['selection_params_json'] = json.dumps(sel)
         return result
 
     comp_array = np.array(comparables)
@@ -108,6 +188,24 @@ def score_contract(contract, seed, config, bootstrap_analyzer, calibration_profi
         'has_political_donations': contract.get('has_donations', False)}
     br = bayesian.calculate_posterior(100 - markup_r.p_value * 100, chars)
     result.update({'bayesian_prior': float(br.prior_probability), 'bayesian_likelihood_ratio': float(br.likelihood_ratio), 'bayesian_posterior': float(br.posterior_probability)})
+    # CRI Integration: compute indicators from contract metadata
+    cri, cri_lr = _compute_cri_for_score(contract)
+    result.update({
+        'cri_score': cri.cri_score, 'cri_tier': cri.tier,
+        'cri_n_flagged': cri.n_indicators_flagged, 'cri_n_available': cri.n_indicators_available,
+        'cri_likelihood_ratio': round(cri_lr, 4),
+    })
+    # TCA Integration: topological contradiction analysis
+    tca_risk, tca_lr, tca_details = _compute_tca_for_score(contract, comparables)
+    result.update({
+        'tca_risk_score': tca_risk, 'tca_likelihood_ratio': round(tca_lr, 4),
+        'tca_contradiction_count': tca_details.get('contradiction_count', 0),
+        'tca_verdict': tca_details.get('verdict', ''),
+    })
+    sel = json.loads(result.get('selection_params_json', '{}'))
+    sel['cri'] = {'score': cri.cri_score, 'tier': cri.tier, 'lr': round(cri_lr, 4)}
+    sel['tca'] = tca_details
+    result['selection_params_json'] = json.dumps(sel)
     return result
 
 def assign_tier(score, fdr_adj, survives_fdr, thresholds=None):
@@ -117,6 +215,20 @@ def assign_tier(score, fdr_adj, survives_fdr, thresholds=None):
     ci = score.get('markup_ci_lower',0) or 0
     post = score.get('bayesian_posterior',0) or 0
     pci = score.get('percentile_ci_lower',0) or 0
+    # CRI posterior adjustment: apply CRI likelihood ratio when CRI has meaningful data
+    cri_score_val = score.get('cri_score')
+    cri_lr = score.get('cri_likelihood_ratio', 1.0)
+    if cri_score_val is not None and cri_lr != 1.0 and 0 < post < 1:
+        post_odds = post / (1 - post)
+        adjusted_odds = post_odds * cri_lr
+        post = adjusted_odds / (1 + adjusted_odds)
+    # TCA posterior adjustment: apply TCA likelihood ratio when contradictions found
+    tca_lr = score.get('tca_likelihood_ratio', 1.0)
+    tca_risk = score.get('tca_risk_score', 0.0)
+    if tca_lr != 1.0 and 0 < post < 1:
+        post_odds = post / (1 - post)
+        adjusted_odds = post_odds * tca_lr
+        post = adjusted_odds / (1 + adjusted_odds)
     red_post = thresholds['red']
     yellow_post = thresholds['yellow']
     min_ci_yellow = thresholds.get('min_ci_yellow', 65)
@@ -130,6 +242,14 @@ def assign_tier(score, fdr_adj, survives_fdr, thresholds=None):
     elif pci > 90: f.append(80)
     if post > red_post: f.append(90)
     elif post > yellow_post: f.append(75)
+    # CRI composite evidence factor
+    if cri_score_val is not None:
+        if cri_score_val >= 0.50: f.append(85)
+        elif cri_score_val >= 0.25: f.append(70)
+    # TCA composite evidence factor
+    tca_verdict = score.get('tca_verdict', '')
+    if tca_verdict == 'structurally_fraudulent': f.append(90)
+    elif tca_verdict == 'suspicious': f.append(75)
     if not f:
         logger.debug("No evidence signals", extra={"contract_id": score.get('contract_id'), "decision": "GREEN"})
         return 'GREEN', 5000
@@ -152,7 +272,8 @@ def assign_tier(score, fdr_adj, survives_fdr, thresholds=None):
                    "confidence_avg": avg, "markup_ci_lower": ci,
                    "bayesian_posterior": round(post, 4),
                    "percentile_ci_lower": pci, "survives_fdr": survives_fdr,
-                   "evidence_factors": f})
+                   "tca_verdict": tca_verdict, "tca_risk": tca_risk,
+                   "tca_lr": tca_lr, "evidence_factors": f})
     else:
         logger.debug("Tier assigned",
             extra={"contract_id": cid, "decision": tier, "confidence_avg": avg})
@@ -271,6 +392,31 @@ class InstitutionalPipeline:
             else:
                 s['fdr_adjusted_pvalue']=float(adj[fi]); s['survives_fdr']=bool(surv[fi])
                 s['tier'], s['triage_priority'] = assign_tier(s, adj[fi], surv[fi], thresholds=tier_thresholds); fi+=1
+
+        # Optional Pass 3: Network analysis enrichment
+        if config.get('enable_network_analysis', False):
+            try:
+                from network_analysis import run_network_analysis
+                net_result = run_network_analysis(self.db_path)
+                vendor_risk = {}
+                for cluster in net_result.get('clusters', []):
+                    for vendor in cluster.get('vendors', []):
+                        if cluster.get('risk_score', 0) > vendor_risk.get(vendor, 0):
+                            vendor_risk[vendor] = cluster['risk_score']
+                cid_to_vendor = {c['contract_id']: c['vendor_name'] for c in contracts}
+                enriched = 0
+                for s in scores:
+                    vendor = cid_to_vendor.get(s['contract_id'], '')
+                    net_risk = vendor_risk.get(vendor, 0)
+                    if net_risk > 0:
+                        s['network_risk_score'] = net_risk
+                        enriched += 1
+                logger.info("Network analysis complete",
+                    extra={"run_id": run_id, "clusters": net_result['summary']['total_clusters'],
+                           "high_risk": net_result['summary']['high_risk_clusters'],
+                           "enriched_contracts": enriched})
+            except Exception as e:
+                logger.error("Network analysis failed", extra={"run_id": run_id, "error": str(e)})
 
         logger.info("Persisting scores", extra={"run_id": run_id, "n_scores": len(scores)})
         self._persist_scores(run_id, scores)
